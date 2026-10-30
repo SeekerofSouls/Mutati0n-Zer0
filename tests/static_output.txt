@@ -1,0 +1,21 @@
+test_64_unique_mutations_have_implemented_effects (__main__.ProjectChecks.test_64_unique_mutations_have_implemented_effects) ... ok
+test_branch_save_and_export_json (__main__.ProjectChecks.test_branch_save_and_export_json) ... ok
+test_custom_audio_files_and_settings (__main__.ProjectChecks.test_custom_audio_files_and_settings) ... ok
+test_dialogue_is_silent_and_all_speakers_have_text (__main__.ProjectChecks.test_dialogue_is_silent_and_all_speakers_have_text) ... ok
+test_enemy_behaviors_and_direct_blood_damage (__main__.ProjectChecks.test_enemy_behaviors_and_direct_blood_damage) ... ok
+test_every_asset_exists_with_exact_dimensions (__main__.ProjectChecks.test_every_asset_exists_with_exact_dimensions) ... ok
+test_portraits_and_cutscene_resolve (__main__.ProjectChecks.test_portraits_and_cutscene_resolve) ... ok
+test_rendering_never_spawns_gameplay_objects (__main__.ProjectChecks.test_rendering_never_spawns_gameplay_objects) ... ok
+test_room_rewards_and_save_points_exist (__main__.ProjectChecks.test_room_rewards_and_save_points_exist) ... ok
+test_scene_and_preloads_resolve (__main__.ProjectChecks.test_scene_and_preloads_resolve) ... ok
+test_scripts_have_balanced_tokens_and_unique_functions (__main__.ProjectChecks.test_scripts_have_balanced_tokens_and_unique_functions) ... ok
+test_split_children_do_not_recurse (__main__.ProjectChecks.test_split_children_do_not_recurse) ... ok
+test_synergies_and_optional_room_assets (__main__.ProjectChecks.test_synergies_and_optional_room_assets) ... ok
+test_ten_bosses_have_patterns (__main__.ProjectChecks.test_ten_bosses_have_patterns) ... ok
+test_test_mode_never_saves_profile (__main__.ProjectChecks.test_test_mode_never_saves_profile) ... ok
+test_unlock_rewards_and_character_gates_resolve (__main__.ProjectChecks.test_unlock_rewards_and_character_gates_resolve) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.047s
+
+OK

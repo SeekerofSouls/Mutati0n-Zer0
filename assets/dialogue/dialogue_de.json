@@ -1,0 +1,241 @@
+{
+  "letters_per_second": 42,
+  "ambient_cooldown": 18.0,
+  "item_lines": {
+    "triple": [
+      "Ey Alter, wie geil ist das denn? Jetzt kann ich drei von den Viechern gleichzeitig wegfetzen!"
+    ],
+    "twin": [
+      "Zwei Drüsen. Doppelter Ärger. Für euch."
+    ],
+    "heart": [
+      "Ein zweites Herz? Geil. Eins allein war eh überfordert."
+    ],
+    "glass": [
+      "Viel Schaden, wenig Leben. Klingt nach einer vernünftigen Entscheidung."
+    ],
+    "poison": [
+      "Das ist bestimmt nicht gesund. Für euch zumindest."
+    ],
+    "burn": [
+      "Okay, jetzt brennt es. Diesmal bin ich der Grund."
+    ],
+    "ice": [
+      "Ihr bleibt jetzt mal ganz entspannt. SEHR entspannt."
+    ],
+    "heavy": [
+      "Der Arm wiegt gefühlt eine Tonne. Aber guck mal, wie weit du fliegst!"
+    ],
+    "blooddash": [
+      "Das ist meine Blutspur? Warum ist das meine Blutspur?!"
+    ],
+    "vampire": [
+      "Ich wollte einen Snack. Nicht gleich einen Blutvertrag."
+    ],
+    "phoenix": [
+      "Eine zweite Chance. Diesmal verschwende ich sie bestimmt nicht."
+    ],
+    "crown": [
+      "Endlich erkennt hier jemand mein Talent."
+    ],
+    "homing": [
+      "Die Dinger suchen sich ihr Ziel selbst? Ich liebe diesen Service."
+    ],
+    "boomerang": [
+      "Kommt alles zurück. Sogar meine schlechte Entscheidung."
+    ],
+    "orbit": [
+      "Ihr bekommt einen eigenen Sicherheitsabstand."
+    ],
+    "drone": [
+      "Du bist jetzt mein Kollege. Wir kündigen zusammen."
+    ],
+    "explode": [
+      "Jetzt mit extra Reinigungskosten."
+    ],
+    "split": [
+      "Ein Treffer. Drei neue Probleme. Für euch!"
+    ]
+  },
+  "generic_item": [
+    "Okay. {item}. Ist das jetzt nh teil von mir?",
+    "{item}? wtf ist das? Egal ist jetzt meins",
+    "Das fühlt sich lowkey OP an. GEIL!",
+    "Ich sollte das nicht anfassen. aber dafür ist es wohl zu spät",
+    "Ey geil {item}! Kein Plan was das ist.",
+    "Und was soll mir jetzt {item} jetzt sagen?",
+    "Gubi Fortnite? Nein! {item}?",
+    "Oh like maybe well meet at a bar well drive a funky {item}",
+    "Absolute Psychose digga",
+    "Hey its me its {item}"
+  ],
+  "synergy": [
+    "Okay, das passt zusammen. Bin ich jetzt Schlau?.",
+    "Diese Combi ist einfach nur broken..."
+  ],
+  "hurt": [
+    "Aua. Das hat weh getahn Hundskribl nochmal.",
+    "Okay, das hab ich aber gespürt :(",
+    "I cant do Nathan!",
+    "Ich hau dir gleich eine nei du Vogel!",
+    "Aua die Rose hat mich gebissen!",
+    "WO SIND MEINE TEAMMATES",
+    "Ach f*ck dich doch du B*stard",
+    "Darf ich fluchen? Es gibt blut in dem Spiel also Hoffe ich mal ja",
+    "Ballright"
+  ],
+  "low_hp": [
+    "OKAY DIGGA GENUG JETZT ABER",
+    "Nicht panisch werden. Einfach ... lock in gehn.",
+    "Ballright bro lock in",
+    "Hat jemand Medkit oder so?",
+    "Bin gleich dead sh*t"
+  ],
+  "bosses": {
+    "brood": {
+      "intro": [
+        "Du riechst nach einer absoluten psychose"
+      ],
+      "defeat": [
+        "Wie bist du so stark alter!"
+      ]
+    },
+    "chitin": {
+      "intro": [
+        "Du wirst an meiner Panzerung zerbrechen."
+      ],
+      "defeat": [
+        "Das ... war nur Aufwärmrunde fr!"
+      ]
+    },
+    "synapse": {
+      "intro": [
+        "Du bist erledigt!"
+      ],
+      "defeat": [
+        "WELCHER IDIOT HAT UNO REVERSE ERFUNDEN"
+      ]
+    },
+    "furnace": {
+      "intro": [
+        "Hier unten bleibt nichts kalt! Denn ich benutze noch eine PS4!"
+      ],
+      "defeat": [
+        "Jemand hat dort wohl neue Wärmeleitpaste reingemacht..."
+      ]
+    },
+    "marrow": {
+      "intro": [
+        "Dein Kopf passt noch in meine Pokemon Sammlung!"
+      ],
+      "defeat": [
+        "Ein Platz ... bleibt wohl leer..."
+      ]
+    },
+    "bog": {
+      "intro": [
+        "Der Sumpf behält alles, was er bekommt."
+      ],
+      "defeat": [
+        "Du kannst gehen. Aber nicht alles von dir geht mit."
+      ]
+    },
+    "executioner": {
+      "intro": [
+        "Den Kopf kannst du gleich hierlassen."
+      ],
+      "defeat": [
+        "nvm bro bitte hau ab."
+      ]
+    },
+    "architect": {
+      "intro": [
+        "Jeder Ausgang führt wieder zu mir."
+      ],
+      "defeat": [
+        "Einen Ausgang gibt es der nicht zu mir führt geh dorthin..."
+      ]
+    },
+    "mirror": {
+      "intro": [
+        "Du willst gegen dich selbst gewinnen?"
+      ],
+      "defeat": [
+        "Welches von uns ... war das Original?"
+      ]
+    },
+    "omega": {
+      "intro": [
+        "Du warst nie dafür vorgesehen, hier anzukommen."
+      ],
+      "defeat": [
+        "Dann ... bist du die neue Probe."
+      ]
+    }
+  },
+  "enemies": {
+    "crawler": [
+      "Du bist nicht auf dem Laufzettel!"
+    ],
+    "spitter": [
+      "Bleib stehen. Ich kann sonst nicht zielen."
+    ],
+    "charger": [
+      "Platz da!"
+    ],
+    "turret": [
+      "Bitte stellen Sie sich in den Geschossring."
+    ],
+    "larva": [
+      "Hunger."
+    ],
+    "decapitator": [
+      "Mein Kopf ist heute irgendwie locker."
+    ],
+    "splitter": [
+      "Wir sind mehr, als du denkst."
+    ],
+    "blinker": [
+      "Hier bin ich. Oder doch hier?"
+    ],
+    "shieldbug": [
+      "Von vorne wird das nix."
+    ],
+    "leech": [
+      "Hast du Kleingeld?"
+    ],
+    "spore": [
+      "Einmal tief einatmen."
+    ],
+    "sniper": [
+      "Stillhalten. Nur einen Moment."
+    ],
+    "medic": [
+      "Ich halte die Kolonie am Leben."
+    ],
+    "mortar": [
+      "Bleib doch genau da stehen."
+    ],
+    "stalker": [
+      "Du schaust in die falsche Richtung."
+    ],
+    "volatile": [
+      "Zu spät zum Zurückweichen?"
+    ]
+  },
+  "room_enter": [
+    "Hier riecht es nach einer schlechten Entscheidung.",
+    "Wenn hier ein Ausgang ist, nehme ich ihn."
+  ],
+  "route": [
+    "Links Ärger. Rechts anderer Ärger. Stark."
+  ],
+  "event": [
+    "Ich kann jederzeit Nein sagen. Theoretisch."
+  ],
+  "ai": [
+    "Die Reinigungskosten werden Ihrer Probe berechnet.",
+    "Ihre Entsorgung verzögert sich geringfügig.",
+    "Diese Flucht ist nicht vom Qualitätsmanagement freigegeben."
+  ]
+}

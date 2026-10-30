@@ -1,0 +1,396 @@
+﻿Key;Datei;Breite px;Höhe px;Zellenmaß;Spalten;Zeilen;Verwendung
+character/null;assets/characters/null.png;288;1152;48;6;24;Charakter NULL
+character/vector;assets/characters/vector.png;288;1152;48;6;24;Charakter VEKTOR
+character/mycel;assets/characters/mycel.png;288;1152;48;6;24;Charakter MYZEL
+character/ember;assets/characters/ember.png;288;1152;48;6;24;Charakter EMBER
+character/stitch;assets/characters/stitch.png;288;1152;48;6;24;Charakter NAHT
+character/echo;assets/characters/echo.png;288;1152;48;6;24;Charakter ECHO
+enemy/crawler;assets/enemies/crawler.png;288;1152;48;6;24;Kriecher: Verfolgt die Probe.
+enemy/spitter;assets/enemies/spitter.png;288;1152;48;6;24;Spucker: Hält Abstand und schießt gezielt.
+enemy/charger;assets/enemies/charger.png;288;1152;48;6;24;Rammbock: Warnt mit einem Strahl vor seinem Ansturm.
+enemy/turret;assets/enemies/turret.png;288;1152;48;6;24;Ringdrüse: Feuert Geschossringe.
+enemy/larva;assets/enemies/larva.png;288;1152;48;6;24;Larve: Klein und schnell.
+enemy/decapitator;assets/enemies/decapitator.png;288;1152;48;6;24;Blutläufer: Kopf mit eigener Trefferzone. Kopflos läuft er panisch und spritzt Blutgeschosse.
+enemy/splitter;assets/enemies/splitter.png;288;1152;48;6;24;Teilungssack: Zerfällt nach dem Tod in zwei Larven.
+enemy/blinker;assets/enemies/blinker.png;288;1152;48;6;24;Phasengeist: Teleportiert nach einer Warnung und schießt einen Fächer.
+enemy/shieldbug;assets/enemies/shieldbug.png;288;1152;48;6;24;Schildkäfer: Fronttreffer verursachen nur 25% Schaden. Flankiere ihn.
+enemy/leech;assets/enemies/leech.png;288;1152;48;6;24;Münzegel: Schneller Verfolger. Kontakt stiehlt zusätzlich eine Münze.
+enemy/spore;assets/enemies/spore.png;288;1152;48;6;24;Sporenträger: Legt Sporenfelder, die Schaden verursachen und Tempo senken.
+enemy/sniper;assets/enemies/sniper.png;288;1152;48;6;24;Nadelauge: Kündigt einen schnellen Präzisionsschuss mit einem Laser an.
+enemy/decapitator_headless;assets/enemies/decapitator_headless.png;288;1152;48;6;24;Blutläufer ohne Kopf
+boss/brood;assets/bosses/brood.png;576;2304;96;6;24;Boss DER BRÜTER
+boss/chitin;assets/bosses/chitin.png;576;2304;96;6;24;Boss CHITIN-KÖNIG
+boss/synapse;assets/bosses/synapse.png;576;2304;96;6;24;Boss SYNAPSE
+boss/furnace;assets/bosses/furnace.png;576;2304;96;6;24;Boss DER OFEN
+boss/marrow;assets/bosses/marrow.png;576;2304;96;6;24;Boss KNOCHENORBIT
+boss/bog;assets/bosses/bog.png;576;2304;96;6;24;Boss DIE MODERKÖNIGIN
+boss/executioner;assets/bosses/executioner.png;576;2304;96;6;24;Boss DER ENTHAUPTER
+boss/architect;assets/bosses/architect.png;576;2304;96;6;24;Boss DER ARCHITEKT
+boss/mirror;assets/bosses/mirror.png;576;2304;96;6;24;Boss SPIEGELPROBE
+boss/omega;assets/bosses/omega.png;576;2304;96;6;24;Boss PROBE OMEGA
+item/muscle;assets/items/muscle.png;32;32;;1;1;Muskelspule: +1.4 Schaden. Jeder Treffer hat mehr Wucht.
+mutation/muscle;assets/mutations/muscle.png;288;1152;48;6;24;Optionaler Charakter-Layer: Muskelspule
+item/quick;assets/items/quick.png;32;32;;1;1;Synapsenbrand: +0.8 Schüsse pro Sekunde.
+mutation/quick;assets/mutations/quick.png;288;1152;48;6;24;Optionaler Charakter-Layer: Synapsenbrand
+item/legs;assets/items/legs.png;32;32;;1;1;Sehnenmotor: +35 Bewegungstempo.
+mutation/legs;assets/mutations/legs.png;288;1152;48;6;24;Optionaler Charakter-Layer: Sehnenmotor
+item/heart;assets/items/heart.png;32;32;;1;1;Zweites Herz: +2 maximale HP, heilt 2 HP.
+mutation/heart;assets/mutations/heart.png;288;1152;48;6;24;Optionaler Charakter-Layer: Zweites Herz
+item/range;assets/items/range.png;32;32;;1;1;Fernlinse: +140 Reichweite, +80 Projektiltempo.
+mutation/range;assets/mutations/range.png;288;1152;48;6;24;Optionaler Charakter-Layer: Fernlinse
+item/crit;assets/items/crit.png;32;32;;1;1;Präzisionsauge: +18% Chance auf doppelten Schaden.
+mutation/crit;assets/mutations/crit.png;288;1152;48;6;24;Optionaler Charakter-Layer: Präzisionsauge
+item/armor;assets/items/armor.png;32;32;;1;1;Chitinpanzer: 25% Chance, einen Treffer abzuwehren.
+mutation/armor;assets/mutations/armor.png;288;1152;48;6;24;Optionaler Charakter-Layer: Chitinpanzer
+item/vampire;assets/items/vampire.png;32;32;;1;1;Blutvertrag: Jeder 8. besiegte Gegner heilt 1 HP.
+mutation/vampire;assets/mutations/vampire.png;288;1152;48;6;24;Optionaler Charakter-Layer: Blutvertrag
+item/poison;assets/items/poison.png;32;32;;1;1;Giftblase: Treffer vergiften Gegner: 2 Schaden/s.
+mutation/poison;assets/mutations/poison.png;288;1152;48;6;24;Optionaler Charakter-Layer: Giftblase
+item/burn;assets/items/burn.png;32;32;;1;1;Glutorgan: Treffer entzünden: 3 Schaden/s für 2 s.
+mutation/burn;assets/mutations/burn.png;288;1152;48;6;24;Optionaler Charakter-Layer: Glutorgan
+item/ice;assets/items/ice.png;32;32;;1;1;Kältenerv: Treffer verlangsamen Gegner um 45%.
+mutation/ice;assets/mutations/ice.png;288;1152;48;6;24;Optionaler Charakter-Layer: Kältenerv
+item/pierce;assets/items/pierce.png;32;32;;1;1;Knochennadel: Projektile durchdringen Gegner.
+mutation/pierce;assets/mutations/pierce.png;288;1152;48;6;24;Optionaler Charakter-Layer: Knochennadel
+item/bounce;assets/items/bounce.png;32;32;;1;1;Gummizelle: Projektile prallen zweimal von Wänden ab.
+mutation/bounce;assets/mutations/bounce.png;288;1152;48;6;24;Optionaler Charakter-Layer: Gummizelle
+item/homing;assets/items/homing.png;32;32;;1;1;Suchinstinkt: Projektile lenken auf nahe Gegner ein.
+mutation/homing;assets/mutations/homing.png;288;1152;48;6;24;Optionaler Charakter-Layer: Suchinstinkt
+item/twin;assets/items/twin.png;32;32;;1;1;"Zwillingsdrüse: Zwei Schüsse gleichzeitig; -0.4 Schaden."
+mutation/twin;assets/mutations/twin.png;288;1152;48;6;24;Optionaler Charakter-Layer: Zwillingsdrüse
+item/triple;assets/items/triple.png;32;32;;1;1;"Dreifachiris: Drei Schussrichtungen; -0.6 Schaden."
+mutation/triple;assets/mutations/triple.png;288;1152;48;6;24;Optionaler Charakter-Layer: Dreifachiris
+item/rear;assets/items/rear.png;32;32;;1;1;Rückenauge: Feuert einen zusätzlichen Schuss rückwärts.
+mutation/rear;assets/mutations/rear.png;288;1152;48;6;24;Optionaler Charakter-Layer: Rückenauge
+item/side;assets/items/side.png;32;32;;1;1;Quernerven: Zusätzliche Schüsse zur linken und rechten Seite.
+mutation/side;assets/mutations/side.png;288;1152;48;6;24;Optionaler Charakter-Layer: Quernerven
+item/burst;assets/items/burst.png;32;32;;1;1;Burst-Lunge: Jeder vierte Angriff ist ein dreifacher Burst.
+mutation/burst;assets/mutations/burst.png;288;1152;48;6;24;Optionaler Charakter-Layer: Burst-Lunge
+item/giant;assets/items/giant.png;32;32;;1;1;"Titanenzelle: +2 Schaden, größere Schüsse; -0.4 Feuerrate."
+mutation/giant;assets/mutations/giant.png;288;1152;48;6;24;Optionaler Charakter-Layer: Titanenzelle
+item/explode;assets/items/explode.png;32;32;;1;1;Drucksack: Schüsse explodieren beim ersten Treffer.
+mutation/explode;assets/mutations/explode.png;288;1152;48;6;24;Optionaler Charakter-Layer: Drucksack
+item/chain;assets/items/chain.png;32;32;;1;1;Sturmleiter: Treffer leiten 55% Schaden zu einem nahen Gegner.
+mutation/chain;assets/mutations/chain.png;288;1152;48;6;24;Optionaler Charakter-Layer: Sturmleiter
+item/split;assets/items/split.png;32;32;;1;1;Splittermark: Beim Treffer entstehen drei kleine Projektile.
+mutation/split;assets/mutations/split.png;288;1152;48;6;24;Optionaler Charakter-Layer: Splittermark
+item/orbit;assets/items/orbit.png;32;32;;1;1;Satellitenkern: Zwei umkreisende Kugeln schaden nahen Gegnern.
+mutation/orbit;assets/mutations/orbit.png;288;1152;48;6;24;Optionaler Charakter-Layer: Satellitenkern
+item/drone;assets/items/drone.png;32;32;;1;1;Larvendrohne: Ein Begleiter feuert selbstständig auf Gegner.
+mutation/drone;assets/mutations/drone.png;288;1152;48;6;24;Optionaler Charakter-Layer: Larvendrohne
+item/shield;assets/items/shield.png;32;32;;1;1;Spiegelhaut: Ein Satellit fängt nahe feindliche Schüsse ab.
+mutation/shield;assets/mutations/shield.png;288;1152;48;6;24;Optionaler Charakter-Layer: Spiegelhaut
+item/thorns;assets/items/thorns.png;32;32;;1;1;Dornenrinde: Nach erlittenem Schaden: 8 Flächenschaden.
+mutation/thorns;assets/mutations/thorns.png;288;1152;48;6;24;Optionaler Charakter-Layer: Dornenrinde
+item/dash;assets/items/dash.png;32;32;;1;1;"Phasenmuskel: Dash lädt 40% schneller; Dash verursacht Schaden."
+mutation/dash;assets/mutations/dash.png;288;1152;48;6;24;Optionaler Charakter-Layer: Phasenmuskel
+item/bomb;assets/items/bomb.png;32;32;;1;1;Sprengbauch: +3 Bomben. Bomben haben 60% mehr Radius.
+mutation/bomb;assets/mutations/bomb.png;288;1152;48;6;24;Optionaler Charakter-Layer: Sprengbauch
+item/magnet;assets/items/magnet.png;32;32;;1;1;Magnetblut: Zieht Münzen und Heilung aus größerer Distanz an.
+mutation/magnet;assets/mutations/magnet.png;288;1152;48;6;24;Optionaler Charakter-Layer: Magnetblut
+item/gold;assets/items/gold.png;32;32;;1;1;Goldfieber: Besiegte Gegner können zusätzliche Münzen droppen.
+mutation/gold;assets/mutations/gold.png;288;1152;48;6;24;Optionaler Charakter-Layer: Goldfieber
+item/discount;assets/items/discount.png;32;32;;1;1;Händlerzunge: Shop-Preise sinken um 35%.
+mutation/discount;assets/mutations/discount.png;288;1152;48;6;24;Optionaler Charakter-Layer: Händlerzunge
+item/heal;assets/items/heal.png;32;32;;1;1;Wundwurzel: Jeder dritte geklärte Kampfraum heilt 1 HP.
+mutation/heal;assets/mutations/heal.png;288;1152;48;6;24;Optionaler Charakter-Layer: Wundwurzel
+item/rage;assets/items/rage.png;32;32;;1;1;Adrenalin: Unter halben HP: +50% Schaden.
+mutation/rage;assets/mutations/rage.png;288;1152;48;6;24;Optionaler Charakter-Layer: Adrenalin
+item/luck;assets/items/luck.png;32;32;;1;1;Glückschromosom: Mehr Raum-Drops und +10% kritische Treffer.
+mutation/luck;assets/mutations/luck.png;288;1152;48;6;24;Optionaler Charakter-Layer: Glückschromosom
+item/glass;assets/items/glass.png;32;32;;1;1;"Glasgenom: +3 Schaden, +1 Feuerrate; -2 maximale HP."
+mutation/glass;assets/mutations/glass.png;288;1152;48;6;24;Optionaler Charakter-Layer: Glasgenom
+item/phoenix;assets/items/phoenix.png;32;32;;1;1;Phönixkern: Einmal pro Run nach dem Tod mit 3 HP aufstehen.
+mutation/phoenix;assets/mutations/phoenix.png;288;1152;48;6;24;Optionaler Charakter-Layer: Phönixkern
+item/nova;assets/items/nova.png;32;32;;1;1;Null-Nova: Jeder 6. Angriff feuert zusätzlich einen Kreis.
+mutation/nova;assets/mutations/nova.png;288;1152;48;6;24;Optionaler Charakter-Layer: Null-Nova
+item/void;assets/items/void.png;32;32;;1;1;Leerenherz: Kritische Treffer erzeugen eine ziehende Zone.
+mutation/void;assets/mutations/void.png;288;1152;48;6;24;Optionaler Charakter-Layer: Leerenherz
+item/crown;assets/items/crown.png;32;32;;1;1;Mutantenkrone: +0.3 Schaden für jede Mutation im Inventar.
+mutation/crown;assets/mutations/crown.png;288;1152;48;6;24;Optionaler Charakter-Layer: Mutantenkrone
+item/heavy;assets/items/heavy.png;32;32;;1;1;Hammerknorpel: Schüsse stoßen Gegner zurück.
+mutation/heavy;assets/mutations/heavy.png;288;1152;48;6;24;Optionaler Charakter-Layer: Hammerknorpel
+item/execute;assets/items/execute.png;32;32;;1;1;Henker-Gen: +50% Trefferschaden gegen Gegner unter 25% HP.
+mutation/execute;assets/mutations/execute.png;288;1152;48;6;24;Optionaler Charakter-Layer: Henker-Gen
+item/bleed;assets/items/bleed.png;32;32;;1;1;Rasiermark: Treffer verursachen 1.5 Blutungsschaden/s für 4 s.
+mutation/bleed;assets/mutations/bleed.png;288;1152;48;6;24;Optionaler Charakter-Layer: Rasiermark
+item/acid;assets/items/acid.png;32;32;;1;1;Säureträne: Kritische Treffer hinterlassen schädigende Säure für Gegner.
+mutation/acid;assets/mutations/acid.png;288;1152;48;6;24;Optionaler Charakter-Layer: Säureträne
+item/frostnova;assets/items/frostnova.png;32;32;;1;1;Winterreflex: Ein Dash verlangsamt alle Gegner in 130 Pixeln.
+mutation/frostnova;assets/mutations/frostnova.png;288;1152;48;6;24;Optionaler Charakter-Layer: Winterreflex
+item/blooddash;assets/items/blooddash.png;32;32;;1;1;Blutbahn: Der Dash hinterlässt eine für Gegner schädliche Spur.
+mutation/blooddash;assets/mutations/blooddash.png;288;1152;48;6;24;Optionaler Charakter-Layer: Blutbahn
+item/barrier;assets/items/barrier.png;32;32;;1;1;Einwegmembran: Der erste Treffer jedes Raums wird sicher abgewehrt.
+mutation/barrier;assets/mutations/barrier.png;288;1152;48;6;24;Optionaler Charakter-Layer: Einwegmembran
+item/soul;assets/items/soul.png;32;32;;1;1;Seelenkultur: Besiegte normale Gegner droppen mit 8% Chance Heilung.
+mutation/soul;assets/mutations/soul.png;288;1152;48;6;24;Optionaler Charakter-Layer: Seelenkultur
+item/scavenger;assets/items/scavenger.png;32;32;;1;1;Schrottmagen: Zerstörte Felsen droppen garantiert eine Münze.
+mutation/scavenger;assets/mutations/scavenger.png;288;1152;48;6;24;Optionaler Charakter-Layer: Schrottmagen
+item/headhunter;assets/items/headhunter.png;32;32;;1;1;Kopfgeldnerv: Abgeschossene Köpfe geben zwei Münzen.
+mutation/headhunter;assets/mutations/headhunter.png;288;1152;48;6;24;Optionaler Charakter-Layer: Kopfgeldnerv
+item/turbo;assets/items/turbo.png;32;32;;1;1;Ruhepol: Beim Stillstehen +35% Feuerrate.
+mutation/turbo;assets/mutations/turbo.png;288;1152;48;6;24;Optionaler Charakter-Layer: Ruhepol
+item/boomerang;assets/items/boomerang.png;32;32;;1;1;Rücklaufsehne: Schüsse kehren nach 0.55 s zu dir zurück.
+mutation/boomerang;assets/mutations/boomerang.png;288;1152;48;6;24;Optionaler Charakter-Layer: Rücklaufsehne
+item/keen;assets/items/keen.png;32;32;;1;1;Falkenauge: +12% kritische Treffer, +60 Reichweite.
+mutation/keen;assets/mutations/keen.png;288;1152;48;6;24;Optionaler Charakter-Layer: Falkenauge
+item/longshot;assets/items/longshot.png;32;32;;1;1;Teleskoprippe: +220 Reichweite, +40 Projektiltempo.
+mutation/longshot;assets/mutations/longshot.png;288;1152;48;6;24;Optionaler Charakter-Layer: Teleskoprippe
+item/rapid;assets/items/rapid.png;32;32;;1;1;Zuckermotor: +1.2 Feuerrate, -0.3 Schaden.
+mutation/rapid;assets/mutations/rapid.png;288;1152;48;6;24;Optionaler Charakter-Layer: Zuckermotor
+item/brute;assets/items/brute.png;32;32;;1;1;Berserkerfaser: +2.4 Schaden, -15 Tempo.
+mutation/brute;assets/mutations/brute.png;288;1152;48;6;24;Optionaler Charakter-Layer: Berserkerfaser
+item/marathon;assets/items/marathon.png;32;32;;1;1;Federbein: +25 Tempo, +60 Projektiltempo.
+mutation/marathon;assets/mutations/marathon.png;288;1152;48;6;24;Optionaler Charakter-Layer: Federbein
+item/shell;assets/items/shell.png;32;32;;1;1;Keramikhaut: +12% Abwehrchance und +1 maximale HP.
+mutation/shell;assets/mutations/shell.png;288;1152;48;6;24;Optionaler Charakter-Layer: Keramikhaut
+item/battery;assets/items/battery.png;32;32;;1;1;Kraftknoten: +0.6 Feuerrate und +0.7 Schaden.
+mutation/battery;assets/mutations/battery.png;288;1152;48;6;24;Optionaler Charakter-Layer: Kraftknoten
+item/vital;assets/items/vital.png;32;32;;1;1;Lebensknospe: +3 maximale HP, heilt 3 HP, -10 Tempo.
+mutation/vital;assets/mutations/vital.png;288;1152;48;6;24;Optionaler Charakter-Layer: Lebensknospe
+item/needle;assets/items/needle.png;32;32;;1;1;Mikrokanal: +120 Projektiltempo und +0.3 Feuerrate.
+mutation/needle;assets/mutations/needle.png;288;1152;48;6;24;Optionaler Charakter-Layer: Mikrokanal
+item/focus;assets/items/focus.png;32;32;;1;1;Drittes Auge: +20% kritische Treffer, -0.2 Feuerrate.
+mutation/focus;assets/mutations/focus.png;288;1152;48;6;24;Optionaler Charakter-Layer: Drittes Auge
+item/dense;assets/items/dense.png;32;32;;1;1;Dichte DNA: +1.8 Schaden und +80 Reichweite.
+mutation/dense;assets/mutations/dense.png;288;1152;48;6;24;Optionaler Charakter-Layer: Dichte DNA
+item/royal;assets/items/royal.png;32;32;;1;1;Königszelle: +1 HP, +15 Tempo, +0.5 Schaden.
+mutation/royal;assets/mutations/royal.png;288;1152;48;6;24;Optionaler Charakter-Layer: Königszelle
+biome/incubator/floor;assets/rooms/incubator/floor_tile.png;64;64;;1;1;INKUBATOR wiederholbare Bodenfliese
+biome/incubator/background;assets/rooms/incubator/room_background.png;920;584;;1;1;INKUBATOR Raumhintergrund über Bodenfliesen
+biome/incubator/start;assets/rooms/incubator/start_overlay.png;920;584;;1;1;INKUBATOR start Raum-Dekoration
+biome/incubator/combat;assets/rooms/incubator/combat_overlay.png;920;584;;1;1;INKUBATOR combat Raum-Dekoration
+biome/incubator/treasure;assets/rooms/incubator/treasure_overlay.png;920;584;;1;1;INKUBATOR treasure Raum-Dekoration
+biome/incubator/shop;assets/rooms/incubator/shop_overlay.png;920;584;;1;1;INKUBATOR shop Raum-Dekoration
+biome/incubator/rest;assets/rooms/incubator/rest_overlay.png;920;584;;1;1;INKUBATOR rest Raum-Dekoration
+biome/incubator/boss;assets/rooms/incubator/boss_overlay.png;920;584;;1;1;INKUBATOR boss Raum-Dekoration
+biome/incubator/transition;assets/rooms/incubator/transition_overlay.png;920;584;;1;1;INKUBATOR transition Raum-Dekoration
+biome/incubator/rock;assets/rooms/incubator/rock.png;64;64;;1;1;INKUBATOR zerstörbarer Felsen
+biome/incubator/door_open;assets/rooms/incubator/door_open.png;64;96;;1;1;"INKUBATOR Tür open; horizontal um 90 Grad drehen"
+biome/incubator/door_closed;assets/rooms/incubator/door_closed.png;64;96;;1;1;"INKUBATOR Tür closed; horizontal um 90 Grad drehen"
+biome/reactor/floor;assets/rooms/reactor/floor_tile.png;64;64;;1;1;REAKTOR wiederholbare Bodenfliese
+biome/reactor/background;assets/rooms/reactor/room_background.png;920;584;;1;1;REAKTOR Raumhintergrund über Bodenfliesen
+biome/reactor/start;assets/rooms/reactor/start_overlay.png;920;584;;1;1;REAKTOR start Raum-Dekoration
+biome/reactor/combat;assets/rooms/reactor/combat_overlay.png;920;584;;1;1;REAKTOR combat Raum-Dekoration
+biome/reactor/treasure;assets/rooms/reactor/treasure_overlay.png;920;584;;1;1;REAKTOR treasure Raum-Dekoration
+biome/reactor/shop;assets/rooms/reactor/shop_overlay.png;920;584;;1;1;REAKTOR shop Raum-Dekoration
+biome/reactor/rest;assets/rooms/reactor/rest_overlay.png;920;584;;1;1;REAKTOR rest Raum-Dekoration
+biome/reactor/boss;assets/rooms/reactor/boss_overlay.png;920;584;;1;1;REAKTOR boss Raum-Dekoration
+biome/reactor/transition;assets/rooms/reactor/transition_overlay.png;920;584;;1;1;REAKTOR transition Raum-Dekoration
+biome/reactor/rock;assets/rooms/reactor/rock.png;64;64;;1;1;REAKTOR zerstörbarer Felsen
+biome/reactor/door_open;assets/rooms/reactor/door_open.png;64;96;;1;1;"REAKTOR Tür open; horizontal um 90 Grad drehen"
+biome/reactor/door_closed;assets/rooms/reactor/door_closed.png;64;96;;1;1;"REAKTOR Tür closed; horizontal um 90 Grad drehen"
+biome/marsh/floor;assets/rooms/marsh/floor_tile.png;64;64;;1;1;MODERSUMPF wiederholbare Bodenfliese
+biome/marsh/background;assets/rooms/marsh/room_background.png;920;584;;1;1;MODERSUMPF Raumhintergrund über Bodenfliesen
+biome/marsh/start;assets/rooms/marsh/start_overlay.png;920;584;;1;1;MODERSUMPF start Raum-Dekoration
+biome/marsh/combat;assets/rooms/marsh/combat_overlay.png;920;584;;1;1;MODERSUMPF combat Raum-Dekoration
+biome/marsh/treasure;assets/rooms/marsh/treasure_overlay.png;920;584;;1;1;MODERSUMPF treasure Raum-Dekoration
+biome/marsh/shop;assets/rooms/marsh/shop_overlay.png;920;584;;1;1;MODERSUMPF shop Raum-Dekoration
+biome/marsh/rest;assets/rooms/marsh/rest_overlay.png;920;584;;1;1;MODERSUMPF rest Raum-Dekoration
+biome/marsh/boss;assets/rooms/marsh/boss_overlay.png;920;584;;1;1;MODERSUMPF boss Raum-Dekoration
+biome/marsh/transition;assets/rooms/marsh/transition_overlay.png;920;584;;1;1;MODERSUMPF transition Raum-Dekoration
+biome/marsh/rock;assets/rooms/marsh/rock.png;64;64;;1;1;MODERSUMPF zerstörbarer Felsen
+biome/marsh/door_open;assets/rooms/marsh/door_open.png;64;96;;1;1;"MODERSUMPF Tür open; horizontal um 90 Grad drehen"
+biome/marsh/door_closed;assets/rooms/marsh/door_closed.png;64;96;;1;1;"MODERSUMPF Tür closed; horizontal um 90 Grad drehen"
+biome/ossuary/floor;assets/rooms/ossuary/floor_tile.png;64;64;;1;1;KNOCHENARCHIV wiederholbare Bodenfliese
+biome/ossuary/background;assets/rooms/ossuary/room_background.png;920;584;;1;1;KNOCHENARCHIV Raumhintergrund über Bodenfliesen
+biome/ossuary/start;assets/rooms/ossuary/start_overlay.png;920;584;;1;1;KNOCHENARCHIV start Raum-Dekoration
+biome/ossuary/combat;assets/rooms/ossuary/combat_overlay.png;920;584;;1;1;KNOCHENARCHIV combat Raum-Dekoration
+biome/ossuary/treasure;assets/rooms/ossuary/treasure_overlay.png;920;584;;1;1;KNOCHENARCHIV treasure Raum-Dekoration
+biome/ossuary/shop;assets/rooms/ossuary/shop_overlay.png;920;584;;1;1;KNOCHENARCHIV shop Raum-Dekoration
+biome/ossuary/rest;assets/rooms/ossuary/rest_overlay.png;920;584;;1;1;KNOCHENARCHIV rest Raum-Dekoration
+biome/ossuary/boss;assets/rooms/ossuary/boss_overlay.png;920;584;;1;1;KNOCHENARCHIV boss Raum-Dekoration
+biome/ossuary/transition;assets/rooms/ossuary/transition_overlay.png;920;584;;1;1;KNOCHENARCHIV transition Raum-Dekoration
+biome/ossuary/rock;assets/rooms/ossuary/rock.png;64;64;;1;1;KNOCHENARCHIV zerstörbarer Felsen
+biome/ossuary/door_open;assets/rooms/ossuary/door_open.png;64;96;;1;1;"KNOCHENARCHIV Tür open; horizontal um 90 Grad drehen"
+biome/ossuary/door_closed;assets/rooms/ossuary/door_closed.png;64;96;;1;1;"KNOCHENARCHIV Tür closed; horizontal um 90 Grad drehen"
+biome/void/floor;assets/rooms/void/floor_tile.png;64;64;;1;1;NULLKERN wiederholbare Bodenfliese
+biome/void/background;assets/rooms/void/room_background.png;920;584;;1;1;NULLKERN Raumhintergrund über Bodenfliesen
+biome/void/start;assets/rooms/void/start_overlay.png;920;584;;1;1;NULLKERN start Raum-Dekoration
+biome/void/combat;assets/rooms/void/combat_overlay.png;920;584;;1;1;NULLKERN combat Raum-Dekoration
+biome/void/treasure;assets/rooms/void/treasure_overlay.png;920;584;;1;1;NULLKERN treasure Raum-Dekoration
+biome/void/shop;assets/rooms/void/shop_overlay.png;920;584;;1;1;NULLKERN shop Raum-Dekoration
+biome/void/rest;assets/rooms/void/rest_overlay.png;920;584;;1;1;NULLKERN rest Raum-Dekoration
+biome/void/boss;assets/rooms/void/boss_overlay.png;920;584;;1;1;NULLKERN boss Raum-Dekoration
+biome/void/transition;assets/rooms/void/transition_overlay.png;920;584;;1;1;NULLKERN transition Raum-Dekoration
+biome/void/rock;assets/rooms/void/rock.png;64;64;;1;1;NULLKERN zerstörbarer Felsen
+biome/void/door_open;assets/rooms/void/door_open.png;64;96;;1;1;"NULLKERN Tür open; horizontal um 90 Grad drehen"
+biome/void/door_closed;assets/rooms/void/door_closed.png;64;96;;1;1;"NULLKERN Tür closed; horizontal um 90 Grad drehen"
+prop/player_shot;assets/props/player_shot.png;32;32;;1;1;Objekt: player_shot
+prop/enemy_shot;assets/props/enemy_shot.png;32;32;;1;1;Objekt: enemy_shot
+prop/blood_shot;assets/props/blood_shot.png;32;32;;1;1;Objekt: blood_shot
+prop/coin;assets/props/coin.png;32;32;;1;1;Objekt: coin
+prop/heal;assets/props/heal.png;32;32;;1;1;Objekt: heal
+prop/bomb;assets/props/bomb.png;32;32;;1;1;Objekt: bomb
+prop/portal;assets/props/portal.png;32;32;;1;1;Objekt: portal
+prop/drone;assets/props/drone.png;32;32;;1;1;Objekt: drone
+prop/orbiter;assets/props/orbiter.png;32;32;;1;1;Objekt: orbiter
+prop/shield;assets/props/shield.png;32;32;;1;1;Objekt: shield
+prop/rock_debris;assets/props/rock_debris.png;32;32;;1;1;Objekt: rock_debris
+prop/detached_head;assets/props/detached_head.png;32;32;;1;1;Objekt: detached_head
+fx/explosion;assets/effects/explosion.png;256;32;32;8;1;Effektanimation explosion
+fx/blood_splash;assets/effects/blood_splash.png;256;32;32;8;1;Effektanimation blood_splash
+fx/blood_puddle;assets/effects/blood_puddle.png;256;32;32;8;1;Effektanimation blood_puddle
+fx/acid_pool;assets/effects/acid_pool.png;256;32;32;8;1;Effektanimation acid_pool
+fx/teleport;assets/effects/teleport.png;256;32;32;8;1;Effektanimation teleport
+fx/spawn;assets/effects/spawn.png;256;32;32;8;1;Effektanimation spawn
+fx/impact;assets/effects/impact.png;256;32;32;8;1;Effektanimation impact
+fx/muzzle;assets/effects/muzzle.png;256;32;32;8;1;Effektanimation muzzle
+biome/incubator/door_open_horizontal;assets/rooms/incubator/door_open_horizontal.png;96;64;;1;1;"INKUBATOR Tür open; horizontal um 90 Grad drehen (horizontal)"
+biome/incubator/door_closed_horizontal;assets/rooms/incubator/door_closed_horizontal.png;96;64;;1;1;"INKUBATOR Tür closed; horizontal um 90 Grad drehen (horizontal)"
+biome/reactor/door_open_horizontal;assets/rooms/reactor/door_open_horizontal.png;96;64;;1;1;"REAKTOR Tür open; horizontal um 90 Grad drehen (horizontal)"
+biome/reactor/door_closed_horizontal;assets/rooms/reactor/door_closed_horizontal.png;96;64;;1;1;"REAKTOR Tür closed; horizontal um 90 Grad drehen (horizontal)"
+biome/marsh/door_open_horizontal;assets/rooms/marsh/door_open_horizontal.png;96;64;;1;1;"MODERSUMPF Tür open; horizontal um 90 Grad drehen (horizontal)"
+biome/marsh/door_closed_horizontal;assets/rooms/marsh/door_closed_horizontal.png;96;64;;1;1;"MODERSUMPF Tür closed; horizontal um 90 Grad drehen (horizontal)"
+biome/ossuary/door_open_horizontal;assets/rooms/ossuary/door_open_horizontal.png;96;64;;1;1;"KNOCHENARCHIV Tür open; horizontal um 90 Grad drehen (horizontal)"
+biome/ossuary/door_closed_horizontal;assets/rooms/ossuary/door_closed_horizontal.png;96;64;;1;1;"KNOCHENARCHIV Tür closed; horizontal um 90 Grad drehen (horizontal)"
+biome/void/door_open_horizontal;assets/rooms/void/door_open_horizontal.png;96;64;;1;1;"NULLKERN Tür open; horizontal um 90 Grad drehen (horizontal)"
+biome/void/door_closed_horizontal;assets/rooms/void/door_closed_horizontal.png;96;64;;1;1;"NULLKERN Tür closed; horizontal um 90 Grad drehen (horizontal)"
+portrait/character/null/neutral;assets/portraits/character/null/neutral.png;96;96;;1;1;NULL Kopfporträt: neutral
+portrait/character/null/happy;assets/portraits/character/null/happy.png;96;96;;1;1;NULL Kopfporträt: begeistert
+portrait/character/null/angry;assets/portraits/character/null/angry.png;96;96;;1;1;NULL Kopfporträt: ernst / wütend
+portrait/character/null/hurt;assets/portraits/character/null/hurt.png;96;96;;1;1;NULL Kopfporträt: verletzt
+portrait/character/vector/neutral;assets/portraits/character/vector/neutral.png;96;96;;1;1;VEKTOR Kopfporträt: neutral
+portrait/character/vector/happy;assets/portraits/character/vector/happy.png;96;96;;1;1;VEKTOR Kopfporträt: begeistert
+portrait/character/vector/angry;assets/portraits/character/vector/angry.png;96;96;;1;1;VEKTOR Kopfporträt: ernst / wütend
+portrait/character/vector/hurt;assets/portraits/character/vector/hurt.png;96;96;;1;1;VEKTOR Kopfporträt: verletzt
+portrait/character/mycel/neutral;assets/portraits/character/mycel/neutral.png;96;96;;1;1;MYZEL Kopfporträt: neutral
+portrait/character/mycel/happy;assets/portraits/character/mycel/happy.png;96;96;;1;1;MYZEL Kopfporträt: begeistert
+portrait/character/mycel/angry;assets/portraits/character/mycel/angry.png;96;96;;1;1;MYZEL Kopfporträt: ernst / wütend
+portrait/character/mycel/hurt;assets/portraits/character/mycel/hurt.png;96;96;;1;1;MYZEL Kopfporträt: verletzt
+portrait/character/ember/neutral;assets/portraits/character/ember/neutral.png;96;96;;1;1;GLUT Kopfporträt: neutral
+portrait/character/ember/happy;assets/portraits/character/ember/happy.png;96;96;;1;1;GLUT Kopfporträt: begeistert
+portrait/character/ember/angry;assets/portraits/character/ember/angry.png;96;96;;1;1;GLUT Kopfporträt: ernst / wütend
+portrait/character/ember/hurt;assets/portraits/character/ember/hurt.png;96;96;;1;1;GLUT Kopfporträt: verletzt
+portrait/character/stitch/neutral;assets/portraits/character/stitch/neutral.png;96;96;;1;1;NAHT Kopfporträt: neutral
+portrait/character/stitch/happy;assets/portraits/character/stitch/happy.png;96;96;;1;1;NAHT Kopfporträt: begeistert
+portrait/character/stitch/angry;assets/portraits/character/stitch/angry.png;96;96;;1;1;NAHT Kopfporträt: ernst / wütend
+portrait/character/stitch/hurt;assets/portraits/character/stitch/hurt.png;96;96;;1;1;NAHT Kopfporträt: verletzt
+portrait/character/echo/neutral;assets/portraits/character/echo/neutral.png;96;96;;1;1;ECHO Kopfporträt: neutral
+portrait/character/echo/happy;assets/portraits/character/echo/happy.png;96;96;;1;1;ECHO Kopfporträt: begeistert
+portrait/character/echo/angry;assets/portraits/character/echo/angry.png;96;96;;1;1;ECHO Kopfporträt: ernst / wütend
+portrait/character/echo/hurt;assets/portraits/character/echo/hurt.png;96;96;;1;1;ECHO Kopfporträt: verletzt
+portrait/enemy/crawler/neutral;assets/portraits/enemy/crawler/neutral.png;96;96;;1;1;Kriecher Kopfporträt: neutral
+portrait/enemy/crawler/happy;assets/portraits/enemy/crawler/happy.png;96;96;;1;1;Kriecher Kopfporträt: begeistert
+portrait/enemy/crawler/angry;assets/portraits/enemy/crawler/angry.png;96;96;;1;1;Kriecher Kopfporträt: ernst / wütend
+portrait/enemy/crawler/hurt;assets/portraits/enemy/crawler/hurt.png;96;96;;1;1;Kriecher Kopfporträt: verletzt
+portrait/enemy/spitter/neutral;assets/portraits/enemy/spitter/neutral.png;96;96;;1;1;Spucker Kopfporträt: neutral
+portrait/enemy/spitter/happy;assets/portraits/enemy/spitter/happy.png;96;96;;1;1;Spucker Kopfporträt: begeistert
+portrait/enemy/spitter/angry;assets/portraits/enemy/spitter/angry.png;96;96;;1;1;Spucker Kopfporträt: ernst / wütend
+portrait/enemy/spitter/hurt;assets/portraits/enemy/spitter/hurt.png;96;96;;1;1;Spucker Kopfporträt: verletzt
+portrait/enemy/charger/neutral;assets/portraits/enemy/charger/neutral.png;96;96;;1;1;Rammbock Kopfporträt: neutral
+portrait/enemy/charger/happy;assets/portraits/enemy/charger/happy.png;96;96;;1;1;Rammbock Kopfporträt: begeistert
+portrait/enemy/charger/angry;assets/portraits/enemy/charger/angry.png;96;96;;1;1;Rammbock Kopfporträt: ernst / wütend
+portrait/enemy/charger/hurt;assets/portraits/enemy/charger/hurt.png;96;96;;1;1;Rammbock Kopfporträt: verletzt
+portrait/enemy/turret/neutral;assets/portraits/enemy/turret/neutral.png;96;96;;1;1;Ringdrüse Kopfporträt: neutral
+portrait/enemy/turret/happy;assets/portraits/enemy/turret/happy.png;96;96;;1;1;Ringdrüse Kopfporträt: begeistert
+portrait/enemy/turret/angry;assets/portraits/enemy/turret/angry.png;96;96;;1;1;Ringdrüse Kopfporträt: ernst / wütend
+portrait/enemy/turret/hurt;assets/portraits/enemy/turret/hurt.png;96;96;;1;1;Ringdrüse Kopfporträt: verletzt
+portrait/enemy/larva/neutral;assets/portraits/enemy/larva/neutral.png;96;96;;1;1;Larve Kopfporträt: neutral
+portrait/enemy/larva/happy;assets/portraits/enemy/larva/happy.png;96;96;;1;1;Larve Kopfporträt: begeistert
+portrait/enemy/larva/angry;assets/portraits/enemy/larva/angry.png;96;96;;1;1;Larve Kopfporträt: ernst / wütend
+portrait/enemy/larva/hurt;assets/portraits/enemy/larva/hurt.png;96;96;;1;1;Larve Kopfporträt: verletzt
+portrait/enemy/decapitator/neutral;assets/portraits/enemy/decapitator/neutral.png;96;96;;1;1;Blutläufer Kopfporträt: neutral
+portrait/enemy/decapitator/happy;assets/portraits/enemy/decapitator/happy.png;96;96;;1;1;Blutläufer Kopfporträt: begeistert
+portrait/enemy/decapitator/angry;assets/portraits/enemy/decapitator/angry.png;96;96;;1;1;Blutläufer Kopfporträt: ernst / wütend
+portrait/enemy/decapitator/hurt;assets/portraits/enemy/decapitator/hurt.png;96;96;;1;1;Blutläufer Kopfporträt: verletzt
+portrait/enemy/splitter/neutral;assets/portraits/enemy/splitter/neutral.png;96;96;;1;1;Teilungssack Kopfporträt: neutral
+portrait/enemy/splitter/happy;assets/portraits/enemy/splitter/happy.png;96;96;;1;1;Teilungssack Kopfporträt: begeistert
+portrait/enemy/splitter/angry;assets/portraits/enemy/splitter/angry.png;96;96;;1;1;Teilungssack Kopfporträt: ernst / wütend
+portrait/enemy/splitter/hurt;assets/portraits/enemy/splitter/hurt.png;96;96;;1;1;Teilungssack Kopfporträt: verletzt
+portrait/enemy/blinker/neutral;assets/portraits/enemy/blinker/neutral.png;96;96;;1;1;Phasengeist Kopfporträt: neutral
+portrait/enemy/blinker/happy;assets/portraits/enemy/blinker/happy.png;96;96;;1;1;Phasengeist Kopfporträt: begeistert
+portrait/enemy/blinker/angry;assets/portraits/enemy/blinker/angry.png;96;96;;1;1;Phasengeist Kopfporträt: ernst / wütend
+portrait/enemy/blinker/hurt;assets/portraits/enemy/blinker/hurt.png;96;96;;1;1;Phasengeist Kopfporträt: verletzt
+portrait/enemy/shieldbug/neutral;assets/portraits/enemy/shieldbug/neutral.png;96;96;;1;1;Schildkäfer Kopfporträt: neutral
+portrait/enemy/shieldbug/happy;assets/portraits/enemy/shieldbug/happy.png;96;96;;1;1;Schildkäfer Kopfporträt: begeistert
+portrait/enemy/shieldbug/angry;assets/portraits/enemy/shieldbug/angry.png;96;96;;1;1;Schildkäfer Kopfporträt: ernst / wütend
+portrait/enemy/shieldbug/hurt;assets/portraits/enemy/shieldbug/hurt.png;96;96;;1;1;Schildkäfer Kopfporträt: verletzt
+portrait/enemy/leech/neutral;assets/portraits/enemy/leech/neutral.png;96;96;;1;1;Münzegel Kopfporträt: neutral
+portrait/enemy/leech/happy;assets/portraits/enemy/leech/happy.png;96;96;;1;1;Münzegel Kopfporträt: begeistert
+portrait/enemy/leech/angry;assets/portraits/enemy/leech/angry.png;96;96;;1;1;Münzegel Kopfporträt: ernst / wütend
+portrait/enemy/leech/hurt;assets/portraits/enemy/leech/hurt.png;96;96;;1;1;Münzegel Kopfporträt: verletzt
+portrait/enemy/spore/neutral;assets/portraits/enemy/spore/neutral.png;96;96;;1;1;Sporenträger Kopfporträt: neutral
+portrait/enemy/spore/happy;assets/portraits/enemy/spore/happy.png;96;96;;1;1;Sporenträger Kopfporträt: begeistert
+portrait/enemy/spore/angry;assets/portraits/enemy/spore/angry.png;96;96;;1;1;Sporenträger Kopfporträt: ernst / wütend
+portrait/enemy/spore/hurt;assets/portraits/enemy/spore/hurt.png;96;96;;1;1;Sporenträger Kopfporträt: verletzt
+portrait/enemy/sniper/neutral;assets/portraits/enemy/sniper/neutral.png;96;96;;1;1;Nadelauge Kopfporträt: neutral
+portrait/enemy/sniper/happy;assets/portraits/enemy/sniper/happy.png;96;96;;1;1;Nadelauge Kopfporträt: begeistert
+portrait/enemy/sniper/angry;assets/portraits/enemy/sniper/angry.png;96;96;;1;1;Nadelauge Kopfporträt: ernst / wütend
+portrait/enemy/sniper/hurt;assets/portraits/enemy/sniper/hurt.png;96;96;;1;1;Nadelauge Kopfporträt: verletzt
+portrait/boss/brood/neutral;assets/portraits/boss/brood/neutral.png;96;96;;1;1;DER BRÜTER Kopfporträt: neutral
+portrait/boss/brood/happy;assets/portraits/boss/brood/happy.png;96;96;;1;1;DER BRÜTER Kopfporträt: begeistert
+portrait/boss/brood/angry;assets/portraits/boss/brood/angry.png;96;96;;1;1;DER BRÜTER Kopfporträt: ernst / wütend
+portrait/boss/brood/hurt;assets/portraits/boss/brood/hurt.png;96;96;;1;1;DER BRÜTER Kopfporträt: verletzt
+portrait/boss/chitin/neutral;assets/portraits/boss/chitin/neutral.png;96;96;;1;1;CHITIN-KÖNIG Kopfporträt: neutral
+portrait/boss/chitin/happy;assets/portraits/boss/chitin/happy.png;96;96;;1;1;CHITIN-KÖNIG Kopfporträt: begeistert
+portrait/boss/chitin/angry;assets/portraits/boss/chitin/angry.png;96;96;;1;1;CHITIN-KÖNIG Kopfporträt: ernst / wütend
+portrait/boss/chitin/hurt;assets/portraits/boss/chitin/hurt.png;96;96;;1;1;CHITIN-KÖNIG Kopfporträt: verletzt
+portrait/boss/synapse/neutral;assets/portraits/boss/synapse/neutral.png;96;96;;1;1;SYNAPSE Kopfporträt: neutral
+portrait/boss/synapse/happy;assets/portraits/boss/synapse/happy.png;96;96;;1;1;SYNAPSE Kopfporträt: begeistert
+portrait/boss/synapse/angry;assets/portraits/boss/synapse/angry.png;96;96;;1;1;SYNAPSE Kopfporträt: ernst / wütend
+portrait/boss/synapse/hurt;assets/portraits/boss/synapse/hurt.png;96;96;;1;1;SYNAPSE Kopfporträt: verletzt
+portrait/boss/furnace/neutral;assets/portraits/boss/furnace/neutral.png;96;96;;1;1;DER OFEN Kopfporträt: neutral
+portrait/boss/furnace/happy;assets/portraits/boss/furnace/happy.png;96;96;;1;1;DER OFEN Kopfporträt: begeistert
+portrait/boss/furnace/angry;assets/portraits/boss/furnace/angry.png;96;96;;1;1;DER OFEN Kopfporträt: ernst / wütend
+portrait/boss/furnace/hurt;assets/portraits/boss/furnace/hurt.png;96;96;;1;1;DER OFEN Kopfporträt: verletzt
+portrait/boss/marrow/neutral;assets/portraits/boss/marrow/neutral.png;96;96;;1;1;KNOCHENORBIT Kopfporträt: neutral
+portrait/boss/marrow/happy;assets/portraits/boss/marrow/happy.png;96;96;;1;1;KNOCHENORBIT Kopfporträt: begeistert
+portrait/boss/marrow/angry;assets/portraits/boss/marrow/angry.png;96;96;;1;1;KNOCHENORBIT Kopfporträt: ernst / wütend
+portrait/boss/marrow/hurt;assets/portraits/boss/marrow/hurt.png;96;96;;1;1;KNOCHENORBIT Kopfporträt: verletzt
+portrait/boss/bog/neutral;assets/portraits/boss/bog/neutral.png;96;96;;1;1;DIE MODERKÖNIGIN Kopfporträt: neutral
+portrait/boss/bog/happy;assets/portraits/boss/bog/happy.png;96;96;;1;1;DIE MODERKÖNIGIN Kopfporträt: begeistert
+portrait/boss/bog/angry;assets/portraits/boss/bog/angry.png;96;96;;1;1;DIE MODERKÖNIGIN Kopfporträt: ernst / wütend
+portrait/boss/bog/hurt;assets/portraits/boss/bog/hurt.png;96;96;;1;1;DIE MODERKÖNIGIN Kopfporträt: verletzt
+portrait/boss/executioner/neutral;assets/portraits/boss/executioner/neutral.png;96;96;;1;1;DER ENTHAUPTER Kopfporträt: neutral
+portrait/boss/executioner/happy;assets/portraits/boss/executioner/happy.png;96;96;;1;1;DER ENTHAUPTER Kopfporträt: begeistert
+portrait/boss/executioner/angry;assets/portraits/boss/executioner/angry.png;96;96;;1;1;DER ENTHAUPTER Kopfporträt: ernst / wütend
+portrait/boss/executioner/hurt;assets/portraits/boss/executioner/hurt.png;96;96;;1;1;DER ENTHAUPTER Kopfporträt: verletzt
+portrait/boss/architect/neutral;assets/portraits/boss/architect/neutral.png;96;96;;1;1;DER ARCHITEKT Kopfporträt: neutral
+portrait/boss/architect/happy;assets/portraits/boss/architect/happy.png;96;96;;1;1;DER ARCHITEKT Kopfporträt: begeistert
+portrait/boss/architect/angry;assets/portraits/boss/architect/angry.png;96;96;;1;1;DER ARCHITEKT Kopfporträt: ernst / wütend
+portrait/boss/architect/hurt;assets/portraits/boss/architect/hurt.png;96;96;;1;1;DER ARCHITEKT Kopfporträt: verletzt
+portrait/boss/mirror/neutral;assets/portraits/boss/mirror/neutral.png;96;96;;1;1;SPIEGELPROBE Kopfporträt: neutral
+portrait/boss/mirror/happy;assets/portraits/boss/mirror/happy.png;96;96;;1;1;SPIEGELPROBE Kopfporträt: begeistert
+portrait/boss/mirror/angry;assets/portraits/boss/mirror/angry.png;96;96;;1;1;SPIEGELPROBE Kopfporträt: ernst / wütend
+portrait/boss/mirror/hurt;assets/portraits/boss/mirror/hurt.png;96;96;;1;1;SPIEGELPROBE Kopfporträt: verletzt
+portrait/boss/omega/neutral;assets/portraits/boss/omega/neutral.png;96;96;;1;1;PROBE OMEGA Kopfporträt: neutral
+portrait/boss/omega/happy;assets/portraits/boss/omega/happy.png;96;96;;1;1;PROBE OMEGA Kopfporträt: begeistert
+portrait/boss/omega/angry;assets/portraits/boss/omega/angry.png;96;96;;1;1;PROBE OMEGA Kopfporträt: ernst / wütend
+portrait/boss/omega/hurt;assets/portraits/boss/omega/hurt.png;96;96;;1;1;PROBE OMEGA Kopfporträt: verletzt
+portrait/ai/neutral;assets/portraits/ai/neutral.png;96;96;;1;1;LABOR-KI Kopfporträt: neutral
+portrait/ai/happy;assets/portraits/ai/happy.png;96;96;;1;1;LABOR-KI Kopfporträt: begeistert
+portrait/ai/angry;assets/portraits/ai/angry.png;96;96;;1;1;LABOR-KI Kopfporträt: ernst / wütend
+portrait/ai/hurt;assets/portraits/ai/hurt.png;96;96;;1;1;LABOR-KI Kopfporträt: verletzt
+ui/dialogue_box;assets/ui/dialogue_box.png;640;128;;1;1;"Sprechkasten: wird auf 740 × 130 px skaliert; Text bleibt getrennt"
+ui/portrait_frame;assets/ui/portrait_frame.png;112;112;;1;1;Rahmen um das 96 × 96 px Kopfporträt
+cutscene/01_labor;assets/cutscene/01_labor.png;960;480;;1;1;Anfangssequenz Bild 1: LABOR 07
+cutscene/02_probe;assets/cutscene/02_probe.png;960;480;;1;1;Anfangssequenz Bild 2: EINE UNBRAUCHBARE PROBE
+cutscene/03_abfall;assets/cutscene/03_abfall.png;960;480;;1;1;Anfangssequenz Bild 3: DIE ENTSORGUNG
+cutscene/04_mutation;assets/cutscene/04_mutation.png;960;480;;1;1;Anfangssequenz Bild 4: ETWAS LEBT NOCH
+cutscene/05_ausbruch;assets/cutscene/05_ausbruch.png;960;480;;1;1;Anfangssequenz Bild 5: EIN GERINGFÜGIGER ZWISCHENFALL
+cutscene/06_tuer;assets/cutscene/06_tuer.png;960;480;;1;1;Anfangssequenz Bild 6: VERSUCH NULL
+biome/incubator/lab;assets/rooms/incubator/lab_overlay.png;920;584;;1;1;INKUBATOR Sonderraum: TAUSCHLABOR
+biome/incubator/sacrifice;assets/rooms/incubator/sacrifice_overlay.png;920;584;;1;1;INKUBATOR Sonderraum: OPFERKAMMER
+biome/incubator/challenge;assets/rooms/incubator/challenge_overlay.png;920;584;;1;1;INKUBATOR Sonderraum: VERSIEGELTE PROBE
+biome/incubator/unstable;assets/rooms/incubator/unstable_overlay.png;920;584;;1;1;INKUBATOR Sonderraum: INSTABILE GENBANK
+biome/reactor/lab;assets/rooms/reactor/lab_overlay.png;920;584;;1;1;REAKTOR Sonderraum: TAUSCHLABOR
+biome/reactor/sacrifice;assets/rooms/reactor/sacrifice_overlay.png;920;584;;1;1;REAKTOR Sonderraum: OPFERKAMMER
+biome/reactor/challenge;assets/rooms/reactor/challenge_overlay.png;920;584;;1;1;REAKTOR Sonderraum: VERSIEGELTE PROBE
+biome/reactor/unstable;assets/rooms/reactor/unstable_overlay.png;920;584;;1;1;REAKTOR Sonderraum: INSTABILE GENBANK
+biome/marsh/lab;assets/rooms/marsh/lab_overlay.png;920;584;;1;1;MODERSUMPF Sonderraum: TAUSCHLABOR
+biome/marsh/sacrifice;assets/rooms/marsh/sacrifice_overlay.png;920;584;;1;1;MODERSUMPF Sonderraum: OPFERKAMMER
+biome/marsh/challenge;assets/rooms/marsh/challenge_overlay.png;920;584;;1;1;MODERSUMPF Sonderraum: VERSIEGELTE PROBE
+biome/marsh/unstable;assets/rooms/marsh/unstable_overlay.png;920;584;;1;1;MODERSUMPF Sonderraum: INSTABILE GENBANK
+biome/ossuary/lab;assets/rooms/ossuary/lab_overlay.png;920;584;;1;1;KNOCHENARCHIV Sonderraum: TAUSCHLABOR
+biome/ossuary/sacrifice;assets/rooms/ossuary/sacrifice_overlay.png;920;584;;1;1;KNOCHENARCHIV Sonderraum: OPFERKAMMER
+biome/ossuary/challenge;assets/rooms/ossuary/challenge_overlay.png;920;584;;1;1;KNOCHENARCHIV Sonderraum: VERSIEGELTE PROBE
+biome/ossuary/unstable;assets/rooms/ossuary/unstable_overlay.png;920;584;;1;1;KNOCHENARCHIV Sonderraum: INSTABILE GENBANK
+biome/void/lab;assets/rooms/void/lab_overlay.png;920;584;;1;1;NULLKERN Sonderraum: TAUSCHLABOR
+biome/void/sacrifice;assets/rooms/void/sacrifice_overlay.png;920;584;;1;1;NULLKERN Sonderraum: OPFERKAMMER
+biome/void/challenge;assets/rooms/void/challenge_overlay.png;920;584;;1;1;NULLKERN Sonderraum: VERSIEGELTE PROBE
+biome/void/unstable;assets/rooms/void/unstable_overlay.png;920;584;;1;1;NULLKERN Sonderraum: INSTABILE GENBANK
+prop/event_lab;assets/props/event_lab.png;32;32;;1;1;Interaktionsobjekt: TAUSCHLABOR
+prop/event_sacrifice;assets/props/event_sacrifice.png;32;32;;1;1;Interaktionsobjekt: OPFERKAMMER
+prop/event_challenge;assets/props/event_challenge.png;32;32;;1;1;Interaktionsobjekt: VERSIEGELTE PROBE
+prop/event_unstable;assets/props/event_unstable.png;32;32;;1;1;Interaktionsobjekt: INSTABILE GENBANK

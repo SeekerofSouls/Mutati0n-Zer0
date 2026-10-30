@@ -1,0 +1,1842 @@
+--- a/project.godot
++++ b/project.godot
+@@ -14,9 +14,9 @@
+ 
+ [application]
+ 
+-config/name="MUTATI0N ZER0"
++config/name="MUTATI0N ZER0 — Balance Edition"
+ run/main_scene="res://scenes/Main.tscn"
+-config/features=PackedStringArray("4.7", "GL Compatibility")
++config/features=PackedStringArray("4.4", "GL Compatibility")
+ config/icon="res://assets/icon.svg"
+ 
+ [display]
+--- a/scripts/main.gd
++++ b/scripts/main.gd
+@@ -17,7 +17,11 @@
+ var intro_index = 0
+ var intro_time = 0.0
+ var intro_for_run = false
+-const FLOOR_COUNT = 5
++const FLOOR_COUNT = 10
++var boss_order: Array = []
++var milestone_claimed = false
++var pickup_history: Array = []
++var pool_cd = 0.0
+ var art = Art.new()
+ var corpses: Array = []
+ var barrier_charge = false
+@@ -107,8 +111,10 @@
+  if intro_data is Dictionary: intro_panels = intro_data.get("panels",[])
+  chatter_rng.randomize()
+  sound = Sound.new()
++ sound.testing_silent = "--screenshot" in OS.get_cmdline_user_args()
+  add_child(sound)
+  sound.volume = float(profile.data.volume)
++ sound.music_enabled = profile.data.music_enabled
+  ui = CanvasLayer.new()
+  add_child(ui)
+  touch_enabled = DisplayServer.is_touchscreen_available()
+@@ -119,13 +125,14 @@
+   profile.memory_only = true
+   run_smoke_test.call_deferred()
+  if "--screenshot" in OS.get_cmdline_user_args():
+-  start_run()
+-  take_screenshot.call_deferred()
++  test_mode = true
++  profile.memory_only = true
++  screenshot_scenario.call_deferred()
+ 
+ func configure_inputs() -> void:
+  var keys = {"left":[KEY_A],"right":[KEY_D],"up":[KEY_W],"down":[KEY_S],
+  "fire_left":[KEY_LEFT],"fire_right":[KEY_RIGHT],"fire_up":[KEY_UP],"fire_down":[KEY_DOWN],
+- "dash":[KEY_SPACE],"bomb":[KEY_Q],"interact":[KEY_E],"pause":[KEY_ESCAPE],"map":[KEY_TAB]}
++ "dash":[KEY_SPACE],"bomb":[KEY_Q],"interact":[KEY_E],"pause":[KEY_ESCAPE],"map":[KEY_TAB],"genome":[KEY_I]}
+  for action in keys:
+   InputMap.add_action(action,0.18)
+   for key in keys[action]:
+@@ -207,7 +214,7 @@
+   hard = not hard
+   menu()
+  else:
+-  notify("Härtetest: Besiege zuerst PROBE OMEGA.")
++  notify("Härtetest: Besiege zuerst fünf Bosse und verlasse die Schleuse.")
+ func options_menu() -> void:
+  screen = "options"
+  clear_ui()
+@@ -215,9 +222,10 @@
+  button("LAUTSTÄRKE +",Rect2(620,300,220,52),func(): change_volume(0.15))
+  button("BILDSCHIRMWACKELN",Rect2(380,380,460,52),func(): profile.data.shake = not profile.data.shake; profile.save_profile())
+  button("BERÜHRUNGSSTEUERUNG",Rect2(380,460,460,52),func(): touch_enabled = not touch_enabled)
+- button("MUTATIONS-LAYER AN / AUS",Rect2(380,523,220,42),func(): mutation_layers = not mutation_layers)
+- button("SPRÜCHE AN / AUS",Rect2(620,523,220,42),toggle_dialogue)
+- button("ZURÜCK",Rect2(380,620,460,52),menu)
++ button("MUTATIONSOPTIK",Rect2(380,523,220,42),func(): mutation_layers = not mutation_layers)
++ button("SPRÜCHE: "+("AN" if speech.enabled else "AUS"),Rect2(620,523,220,42),toggle_dialogue)
++ button("MUSIK: "+("AN" if profile.data.music_enabled else "AUS"),Rect2(380,575,460,40),toggle_music)
++ button("ZURÜCK",Rect2(380,640,460,52),menu)
+ func change_volume(amount: float) -> void:
+  profile.data.volume = clampf(float(profile.data.volume)+amount,0,1)
+  sound.volume = profile.data.volume
+@@ -248,6 +256,13 @@
+  chatter_rng.seed = seed_value ^ 7281
+  chatter_cd = 12.0
+  route = [0]
++ boss_order = []
++ for biome in Catalog.BIOMES: boss_order.append(rng.randi_range(0,1))
++ milestone_claimed = false
++ pickup_history.clear()
++ pool_cd = 0
++ item_time = 0
++ room = {}
+  run_risk = false
+  curse_speed = 1.0
+  run_hp_cost = 0
+@@ -275,6 +290,13 @@
+ 
+ func generate_floor() -> void:
+  rooms = Dungeon.generate(rng,floor_number,route[floor_number-1])
++ var biome_index = int(route[floor_number-1])
++ var visit = 0
++ for i in range(floor_number):
++  if route[i] == biome_index: visit += 1
++ for coords in rooms:
++  if rooms[coords].type == "boss":
++   rooms[coords].boss_index = biome_index*2+((int(boss_order[biome_index])+visit-1)%2)
+  current = Vector2i.ZERO
+  profile.data.best_floor = maxi(profile.data.best_floor,floor_number)
+  if floor_number == 3:
+@@ -326,7 +348,7 @@
+    [Vector2(340,330),Vector2(700,330),Vector2(340,550),Vector2(700,550)],[Vector2(360,440),Vector2(680,440)]]
+   for pos in layouts[room.layout]:
+    room.obstacles.append({"pos":pos,"radius":26.0,"hp":16.0})
+-  for i in range(rr.randi_range(3,5)+floor_number):
++  for i in range(mini(10,rr.randi_range(3,5)+int((floor_number-1)/2))):
+     var p = Vector2(rr.randf_range(220,820),rr.randf_range(265,620))
+     var tries = 0    
+     while not clear_spawn(p,room.obstacles) and tries < 30:
+@@ -334,13 +356,14 @@
+         tries += 1 
+     var kinds = current_biome().enemies
+     var kind = kinds[rr.randi_range(0,kinds.size()-1)]
++    if floor_number>=2 and i == 0: kind = 13+posmod(floor_number+room.layout,4)
+     room.enemies.append(make_enemy(kind,p))
+  elif room.type == "boss":
+   var index = room.boss_index
+   var info = Catalog.BOSSES[index]
+   var boss = make_enemy(5,Vector2(520,350))
+   boss.boss = index
+-  boss.hp = info.hp*(1.25 if hard else 1.0)*(1.25 if run_risk else 1.0)
++  boss.hp = (115.0+floor_number*55.0+pow(float(floor_number),1.5)*8.0)*(1.2 if hard else 1.0)*(1.2 if run_risk else 1.0)
+   boss.max_hp = boss.hp
+   boss.radius = 42.0
+   boss.cd = 2.2
+@@ -359,7 +382,7 @@
+   for i in range(3):
+    var p = make_pickup("item",Vector2(320+i*200,420),roll_item(offered))
+    offered.append(p.id)
+-   p.price = 8 + Catalog.item(p.id).rarity * 4
++   p.price = 3 if p.type == "heal" else 8 + Catalog.item(p.id).rarity * 4
+    room.pickups.append(p)
+   var heal = make_pickup("heal",Vector2(420,585))
+   heal.price = 3
+@@ -386,24 +409,37 @@
+  return true
+ func make_enemy(kind: int, pos: Vector2) -> Dictionary:
+  var spec = Catalog.enemy(kind)
+- var hp = spec.hp*(1.0+(floor_number-1)*0.23)*(1.25 if hard else 1.0)*(1.25 if run_risk else 1.0)
++ var hp = spec.hp*(1.0+minf(floor_number-1,9)*0.14+maxf(0,floor_number-10)*0.12)*(1.2 if hard else 1.0)*(1.2 if run_risk else 1.0)
+  return {"kind":kind,"pos":pos,"hp":hp,"max_hp":hp,"radius":spec.radius,
+  "cd":rng.randf_range(0.6,1.9),"flash":0.0,"poison":0.0,"burn":0.0,"bleed":0.0,"slow":0.0,"touch_cd":0.0,
+  "vel":Vector2.ZERO,"charge":0.0,"telegraph":0.0,"boss":-1,"phase":0,"dead":false,
+- "headless":false,"head_hp":7.0,"blood_cd":0.3,"panic":5.0,"facing":"down","anim":rng.randf(),"state":"idle","shot_anim":0.0,"target":Vector2.ZERO}
++ "reflect_cd":0.0,"headless":false,"head_hp":7.0,"blood_cd":0.3,"panic":5.0,"facing":"down","anim":rng.randf(),"state":"idle","shot_anim":0.0,"target":Vector2.ZERO}
+ 
+ func make_pickup(kind: String,pos: Vector2,id: String="") -> Dictionary:
+- return {"type":kind,"pos":pos,"id":id,"price":0}
++ return {"type":"heal" if kind == "item" and id == "" else kind,"pos":pos,"id":id,"price":0}
+ func roll_item(exclude: Array = [],minimum_rarity: int=0) -> String:
+- var all_items = Catalog.pool(profile.data.unlocks)
+- var pool = all_items.filter(func(i): return not i.id in inventory and not i.id in exclude and i.rarity>=minimum_rarity)
+- if pool.is_empty(): pool = all_items.filter(func(i): return i.rarity>=minimum_rarity and not i.id in exclude)
+- if pool.is_empty(): pool = all_items
++ var pool = eligible_items(exclude,minimum_rarity)
++ if pool.is_empty(): pool = eligible_items(exclude,0)
++ if pool.is_empty(): return ""
+  var weighted: Array = []
+  for entry in pool:
+-  var weight = 4-entry.rarity+(2 if run_risk and entry.rarity == 2 else 0)+(1 if current_biome().id == "ossuary" and entry.rarity == 1 else 0)
++  var weight = 5-entry.rarity*2+(1 if run_risk and entry.rarity == 2 else 0)
+   for i in range(weight): weighted.append(entry.id)
+- return weighted[rng.randi_range(0,weighted.size()-1)]
++ return str(weighted[rng.randi_range(0,weighted.size()-1)])
++
++func eligible_items(exclude: Array = [],minimum_rarity: int=0) -> Array:
++ return Catalog.pool(profile.data.unlocks).filter(func(i): return not i.id in exclude and i.rarity>=minimum_rarity and mutation_block_reason(i.id) == "")
++
++func mutation_block_reason(id: String) -> String:
++ if id == "": return "Keine weitere passende Mutation verfügbar."
++ if id in inventory: return "Bereits im Genom: jede Mutation ist einmalig."
++ for group in [["twin","triple"],["poison","burn","ice"],["explode","split"]]:
++  if id in group:
++   for owned in group:
++    if owned in inventory: return "Unvereinbar mit "+Catalog.item(owned).name+". Tausche diese zuerst im Labor."
++ if id in ["glass","blooddash"] and player.max_hp+float(Catalog.item(id).stat.get("max_hp",0))<2:
++  return "Du brauchst mindestens 2 maximale LP nach der Mutation."
++ return ""
+ 
+ func save_checkpoint() -> void:
+  if test_mode:
+@@ -411,7 +447,7 @@
+  room.enemies = foes.duplicate(true)
+  room.pickups = pickups.duplicate(true)
+  room.obstacles = obstacles.duplicate(true)
+- profile.save_run({"version":3,"seed":seed_value,"rng":rng.state,"rooms":rooms,"current":current,
++ profile.save_run({"version":4,"boss_order":boss_order,"milestone_claimed":milestone_claimed,"history":pickup_history,"seed":seed_value,"rng":rng.state,"rooms":rooms,"current":current,
+  "floor":floor_number,"player":player,"inventory":inventory,"character":character,"hard":hard,
+  "route":route,"risk":run_risk,"curse_speed":curse_speed,"hp_cost":run_hp_cost,"synergies":found_synergies,
+  "run_time":run_time,"kills":kills_run,"clears":clears,"phoenix":phoenix_used,"attack_count":attack_count})
+@@ -428,6 +464,11 @@
+  rooms = state.rooms
+  current = state.current
+  floor_number = state.floor
++ boss_order = state.boss_order
++ milestone_claimed = state.milestone_claimed
++ pickup_history = state.get("history",[])
++ item_time = 0
++ pool_cd = 0
+  route = state.route
+  run_risk = state.risk
+  curse_speed = state.curse_speed
+@@ -469,18 +510,23 @@
+  clear_ui()
+  button("WEITERSPIELEN",Rect2(450,340,380,56),resume_game)
+  button("SPEICHERN & MENÜ",Rect2(450,415,380,52),menu)
+- button("VERSUCH AUFGEBEN",Rect2(450,490,380,52),func(): finish_run(false,"Der Versuch wurde abgebrochen."),PINK)
++ button("GENOM & FUNDPROTOKOLL",Rect2(450,490,380,52),func(): genome_menu(0),GOLD)
++ button("VERSUCH AUFGEBEN",Rect2(450,555,380,52),func(): finish_run(false,"Der Versuch wurde abgebrochen."),PINK)
+ func resume_game() -> void:
+  screen = "game"
+  game_ui()
+ 
+ func _unhandled_input(event: InputEvent) -> void:
++ if event.is_action_pressed("genome") and screen in ["game","genome"]:
++  if screen == "game": genome_menu(0)
++  else: resume_game()
++  return
+  if event.is_action_pressed("pause"):
+   if screen == "intro":
+    skip_intro()
+    return
+   if screen == "game": pause_game()
+-  elif screen == "pause": resume_game()
++  elif screen in ["pause","genome"]: resume_game()
+   elif screen != "menu": menu()
+  if screen == "intro":
+   if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"): intro_next()
+@@ -564,6 +610,7 @@
+  transition_cd = maxf(0,transition_cd-dt)
+  drone_cd -= dt
+  orbit_damage_cd -= dt
++ pool_cd = maxf(0,pool_cd-dt)
+  shake = maxf(0,shake-dt*22)
+  var movement = move_input()
+  var slow_factor = 1.0
+@@ -575,8 +622,9 @@
+  var old_pos = player.pos
+  player.pos = move_body(player.pos,velocity*dt,14.0)
+  update_player_animation(dt,player.pos-old_pos)
+- if has_item("blooddash") and dash_time>0:
++ if has_item("blooddash") and dash_time>0 and pool_cd<=0:
+   hazards.append({"type":"friendly_pool","pos":player.pos,"timer":0.65,"radius":24.0,"age":0.0,"source":"blooddash"})
++  pool_cd = 0.1
+  var aim = aim_input()
+  if aim.length() > 0.1 and shoot_cd <= 0:
+   fire(aim.normalized())
+@@ -652,7 +700,7 @@
+  player_shoot_anim = 0.25
+  effects.append({"type":"sprite","key":"muzzle","pos":player.pos+direction*24,"ttl":0.2,"age":0.0,"size":24.0})
+  attack_count += 1
+- var damage = shot_damage()
++ var damage = shot_damage()*(0.65 if has_item("twin") else 0.50 if has_item("triple") else 1.0)
+  var dirs: Array = [direction]
+  if has_item("triple"):
+   dirs = [direction.rotated(-0.24),direction,direction.rotated(0.24)]
+@@ -674,13 +722,14 @@
+  sound.play("shoot")
+ func shot_damage() -> float:
+  var d = maxf(0.8,player.damage)
+- if has_item("crown"): d += inventory.size()*0.3
++ if has_item("crown"): d += minf(4,inventory.size()*0.2)
+  if has_item("rage") and player.hp <= player.max_hp*0.5: d *= 1.5
+  return d
+ func add_shot(pos: Vector2,dir: Vector2,friendly: bool,damage: float,child: bool=false,speed: float=0) -> Dictionary:
+- if shots.size() > 450: return {}
+- var critical = friendly and rng.randf()<minf(0.75,player.crit)
+- var enemy_speed = (240.0 if speed == 0 else speed)*curse_speed*(1.15 if run_risk else 1.0)
++ if friendly and shots.size()>=256: return {}
++ if shots.size()>=384: return {}
++ var critical = friendly and not child and rng.randf()<player.crit
++ var enemy_speed = (240.0 if speed == 0 else speed)*curse_speed*(1.1 if run_risk else 1.0)*minf(1.4,1.0+maxf(0,floor_number-10)*0.025)
+  var bullet = {"pos":pos,"vel":dir*(player.shot_speed if friendly else enemy_speed),
+  "friendly":friendly,"damage":damage*(2.0 if critical else 1.0),"radius":(7.0 if has_item("giant") else 5.0) if friendly else 6.0,
+  "ttl":player.range/maxf(100,player.shot_speed) if friendly else 5.0,"bounce":2 if friendly and has_item("bounce") else 0,
+@@ -747,8 +796,9 @@
+      if has_item("ice"): enemy.slow = 2.0
+      if not bullet.child:
+       on_hit(bullet,enemy)
+-     if enemy.boss>=0 and Catalog.BOSSES[enemy.boss].kind == "mirror" and enemy.phase%2 == 0:
++     if enemy.boss>=0 and Catalog.BOSSES[enemy.boss].kind == "mirror" and enemy.phase%2 == 0 and enemy.reflect_cd<=0:
+       add_shot(enemy.pos,(player.pos-enemy.pos).normalized(),false,1,false,210)
++      enemy.reflect_cd = 0.45
+      if not has_item("pierce") and not (bullet.returning and has_synergy("return_hunt")):
+       bullet.dead = true
+       break
+@@ -769,7 +819,7 @@
+ 
+ func on_hit(bullet: Dictionary,enemy: Dictionary) -> void:
+  if has_item("explode"):
+-  explosion(bullet.pos,65,bullet.damage*0.6,false)
++  explosion(bullet.pos,65,bullet.damage*0.45,false)
+   if has_synergy("toxic_boom"):
+    hazards.append({"type":"toxic_pool","pos":bullet.pos,"timer":2.5,"radius":65.0,"age":0.0})
+  if has_synergy("shatter") and enemy.slow>0:
+@@ -809,7 +859,7 @@
+   invuln = 0.4
+   burst_particles(player.pos,CYAN,14)
+   return
+- if rng.randf()<minf(0.65,player.armor):
++ if rng.randf()<player.armor:
+   invuln = 0.4
+   burst_particles(player.pos,GOLD,12)
+   return
+@@ -838,6 +888,7 @@
+   enemy.anim += dt
+   enemy.shot_anim = maxf(0,enemy.shot_anim-dt)
+   enemy.cd -= dt
++  enemy.reflect_cd = maxf(0,enemy.reflect_cd-dt)
+   enemy.flash = maxf(0,enemy.flash-dt)
+   enemy.touch_cd = maxf(0,enemy.touch_cd-dt)
+   for status in ["poison","burn","slow","bleed"]:
+@@ -867,8 +918,9 @@
+       enemy.telegraph -= dt
+       if enemy.telegraph<=0:
+        enemy.charge = 0.7
+-       enemy.vel = dir*310
++       enemy.vel = (enemy.target-enemy.pos).normalized()*310
+      elif enemy.cd<=0:
++      enemy.target = player.pos
+       enemy.telegraph = 0.65
+       enemy.cd = 2.6
+      else:
+@@ -928,11 +980,60 @@
+      if enemy.telegraph>0:
+       enemy.telegraph -= dt
+       if enemy.telegraph<=0:
+-       add_shot(enemy.pos,dir,false,1,false,440)
++       add_shot(enemy.pos,(enemy.target-enemy.pos).normalized(),false,1,false,400)
+        enemy.shot_anim = 0.25
+      elif enemy.cd<=0:
++      enemy.target = player.pos
+       enemy.telegraph = 0.85
+       enemy.cd = 2.8
++    13:
++     # Medic: visible tether, limited healing that cannot revive or heal bosses.
++     enemy.pos = move_body(enemy.pos,-dir*28*speed*dt,enemy.radius)
++     if enemy.cd<=0:
++      var target = -1
++      var distance = 240.0
++      for n in range(foes.size()):
++       var ally = foes[n]
++       if ally != enemy and not ally.dead and ally.boss<0 and ally.hp<ally.max_hp and enemy.pos.distance_to(ally.pos)<distance:
++        target = n
++        distance = enemy.pos.distance_to(ally.pos)
++      if target>=0:
++       foes[target].hp = minf(foes[target].max_hp,foes[target].hp+3)
++       effects.append({"type":"line","from":enemy.pos,"to":foes[target].pos,"ttl":0.35,"color":CYAN})
++      enemy.cd = 2.4
++    14:
++     # Telegraph a fixed target, allowing the player to leave the landing zone.
++     if enemy.telegraph>0:
++      enemy.telegraph -= dt
++      if enemy.telegraph<=0:
++       hazards.append({"type":"warning","pos":enemy.target,"timer":0.9,"radius":42.0,"age":0.0})
++     elif enemy.cd<=0:
++      enemy.target = player.pos
++      enemy.telegraph = 0.7
++      enemy.cd = 3.4
++    15:
++     # Flanker circles the player instead of tracking directly.
++     enemy.pos = move_body(enemy.pos,(dir*35+dir.orthogonal()*95)*speed*dt,enemy.radius)
++     if enemy.cd<=0:
++      fan_attack(enemy,dir,2,0.35,180)
++      enemy.cd = 2.2
++    16:
++     # Exploder locks its charge direction during the warning.
++     if enemy.charge>0:
++      enemy.charge -= dt
++      enemy.pos = move_body(enemy.pos,enemy.vel*speed*dt,enemy.radius)
++      if enemy.charge<=0:
++       hazards.append({"type":"warning","pos":enemy.pos,"timer":0.7,"radius":60.0,"age":0.0})
++       enemy.dead = true
++     elif enemy.telegraph>0:
++      enemy.telegraph -= dt
++      if enemy.telegraph<=0: enemy.charge = 0.65
++     elif enemy.cd<=0:
++      enemy.vel = dir*260
++      enemy.target = player.pos
++      enemy.telegraph = 0.9
++      enemy.cd = 4.0
++     else: enemy.pos = move_body(enemy.pos,dir*45*speed*dt,enemy.radius)
+   var moved = enemy.pos-before
+   if moved.length()>0.1: enemy.facing = Art.facing(moved)
+   var prior_state = enemy.state
+@@ -955,18 +1056,19 @@
+ func update_boss(enemy: Dictionary,dt: float,dir: Vector2,speed: float) -> void:
+  var kind = Catalog.BOSSES[enemy.boss].kind
+  var enraged = enemy.hp<enemy.max_hp*0.5
+- var multiplier = 0.72 if enraged else 1.0
++ var multiplier = 0.82 if enraged else 1.0
+  if enemy.charge>0:
+   enemy.charge -= dt
+   enemy.pos = move_body(enemy.pos,enemy.vel*dt,enemy.radius)
+  elif enemy.telegraph>0:
+   enemy.telegraph -= dt
+   if enemy.telegraph<=0:
+-   enemy.vel = dir*430
++   enemy.vel = (enemy.target-enemy.pos).normalized()*390
+    enemy.charge = 0.6
+  else:
+   enemy.pos = move_body(enemy.pos,dir*(42 if kind != "synapse" else 22)*speed*dt,enemy.radius)
+  if enemy.cd>0: return
++ enemy.target = player.pos
+  enemy.phase += 1
+  match kind:
+   "brood":
+@@ -992,7 +1094,7 @@
+   "marrow":
+    ring_attack(enemy,14,200)
+    if enemy.phase%2 == 0: fan_attack(enemy,dir,3,0.3,300)
+-   enemy.cd = 1.8*multiplier
++   enemy.cd = 2.2*multiplier
+   "bog":
+    for i in range(3):
+     hazards.append({"type":"warning","pos":player.pos+Vector2.from_angle(i*TAU/3)*100,"timer":1.2,"radius":45.0,"age":0.0})
+@@ -1117,22 +1219,25 @@
+    "fire", "spore":
+     if h.pos.distance_to(player.pos)<h.radius+10: hurt(1)
+    "toxic_pool":
+-    for e in foes:
+-     if e.pos.distance_to(h.pos)<h.radius+e.radius:
+-      e.poison = maxf(e.poison,2)
+-      damage_enemy(e,3*dt)
++    pass
+    "friendly_pool":
+-    for e in foes:
+-     if e.pos.distance_to(h.pos)<h.radius+e.radius: damage_enemy(e,5*dt)
++    pass
+    "bloodtrail":
+     pass
+    "burst":
+     if h.timer<=0: add_shot(h.pos,h.dir,true,h.damage)
+    "void":
+-    for e in foes:
+-     if e.pos.distance_to(h.pos)<h.radius:
+-      e.pos = move_body(e.pos,(h.pos-e.pos).normalized()*dt*85,e.radius)
+-      damage_enemy(e,4*dt)
++    pass
++ # Overlapping blood/acid pools deal damage once per enemy, not once per pool.
++ for e in foes:
++  if hazards.any(func(h): return h.type == "friendly_pool" and h.timer>0 and e.pos.distance_to(h.pos)<h.radius+e.radius): damage_enemy(e,5*dt)
++  if hazards.any(func(h): return h.type == "toxic_pool" and h.timer>0 and e.pos.distance_to(h.pos)<h.radius+e.radius):
++   e.poison = maxf(e.poison,2)
++   damage_enemy(e,3*dt)
++  var void_zones = hazards.filter(func(h): return h.type == "void" and h.timer>0 and e.pos.distance_to(h.pos)<h.radius)
++  if not void_zones.is_empty():
++   e.pos = move_body(e.pos,(void_zones[0].pos-e.pos).normalized()*dt*85,e.radius)
++   damage_enemy(e,4*dt)
+  hazards = hazards.filter(func(h): return h.timer>0)
+  hazards.append_array(additions)
+ func explosion(pos: Vector2,radius: float,damage: float,break_rocks: bool) -> void:
+@@ -1185,12 +1290,11 @@
+   interact_event(pickup)
+   return
+  if pickup.type == "finish":
+-  profile.data.wins += 1
+-  unlock("win")
+-  sound.play("win")
+-  finish_run(true,"Alle fünf Gebiete gereinigt. Das Labor gehört dir.")
++  claim_milestone()
++  finish_run(true,"%d Bosse besiegt. Die Probe wurde sicher evakuiert." % floor_number)
+   return
+  if pickup.type == "portal":
++  if floor_number>=5: claim_milestone()
+   route.append(pickup.destination)
+   run_risk = pickup.get("risk",false)
+   floor_number += 1
+@@ -1198,6 +1302,11 @@
+   player.hp = minf(player.max_hp,player.hp+1)
+   generate_floor()
+   return
++ if pickup.type == "item":
++  var blocked = mutation_block_reason(pickup.id)
++  if blocked != "":
++   notify(blocked)
++   return
+  var cost = price_of(pickup)
+  if player.coins<cost:
+   notify("Nicht genug Münzen: Du brauchst %d." % cost)
+@@ -1225,6 +1334,10 @@
+  burst_particles(pickup.pos,GOLD,12)
+  sound.play("pickup")
+ func take_item(id: String) -> void:
++ var blocked = mutation_block_reason(id)
++ if blocked != "":
++  notify(blocked)
++  return
+  var item = Catalog.item(id)
+  inventory.append(id)
+  var old_hp = player.hp
+@@ -1237,7 +1350,9 @@
+  profile.save_profile()
+  item_banner = item.name.to_upper()
+  item_detail = item.desc
+- item_time = 3.3
++ item_time = 7.0
++ pickup_history.push_front({"id":id,"name":item.name,"desc":item.desc})
++ if pickup_history.size()>64: pickup_history.resize(64)
+  var lines = speech.data.get("item_lines",{}).get(id,speech.data.get("generic_item",[]))
+  speak_player(speech.choice(lines,chatter_rng).replace("{item}",item.name),"happy",true)
+  check_synergies()
+@@ -1304,7 +1419,7 @@
+  draw_rect(Rect2(0,0,1280,800),INK)
+  for x in range(0,1280,40): draw_line(Vector2(x,0),Vector2(x,800),Color(0.16,0.21,0.3,0.20))
+  for y in range(0,800,40): draw_line(Vector2(0,y),Vector2(1280,y),Color(0.16,0.21,0.3,0.20))
+- if screen in ["game","pause","end"] and not player.is_empty():
++ if screen in ["game","pause","genome","end"] and not player.is_empty():
+   draw_game()
+  else:
+   match screen:
+@@ -1318,8 +1433,9 @@
+   text_at("VERSUCH PAUSIERT",Vector2(448,255),32,WHITE)
+   text_at("Der aktuelle Raum wurde gespeichert.",Vector2(450,292),17,MUTED)
+  if screen == "end": draw_end()
+- if screen == "game": draw_dialogue(Rect2(150,160,740,130))
+- if toast_time>0:
++ if screen == "genome": draw_genome()
++ if screen == "game": draw_dialogue(Rect2(60,748,932,50))
++ if toast_time>0 and screen != "genome" and (screen != "game" or speech.active.is_empty()):
+   draw_rect(Rect2(60,752,1160,35),Color("243345"))
+   text_at(toast,Vector2(78,776),16,GOLD)
+ 
+@@ -1375,7 +1491,7 @@
+  text_at("Audio: %d%%" % int(float(profile.data.volume)*100),Vector2(380,255),20,CYAN)
+  text_at("Bildschirmwackeln: "+("AN" if profile.data.shake else "AUS"),Vector2(380,370),16,MUTED)
+  text_at("Berührungssteuerung: "+("AN" if touch_enabled else "AUS"),Vector2(380,450),16,MUTED)
+- wrapped("Berührung: links ziehen zum Bewegen, rechts ziehen zum Schießen. Die Aktionen haben eigene Tasten. Controller: linker/rechter Stick, A Sprint, X Bombe, B Interaktion, Start Pause.",Vector2(380,590),480,14,MUTED,24)
++ text_at("Musik separat schaltbar; Soundeffekte bleiben hörbar.",Vector2(380,625),14,MUTED)
+ 
+ func draw_archive() -> void:
+  text_at("MUTATIONSARCHIV",Vector2(80,90),40,WHITE)
+@@ -1412,7 +1528,7 @@
+ 
+ func draw_game() -> void:
+  text_at("MUTATION / NULL",Vector2(60,44),23,WHITE)
+- text_at("GEBIET %d / 5   ·   %s" % [floor_number,current_biome().name],Vector2(60,74),16,CYAN)
++ text_at(("ENDLESS %d" % (floor_number-10) if floor_number>10 else "BOSS %d / 10" % floor_number)+"   ·   "+current_biome().name,Vector2(60,74),16,CYAN)
+  var seconds = int(run_time)
+  text_at("%02d:%02d" % [seconds/60,seconds%60],Vector2(880,46),20,MUTED)
+  for i in range(mini(12,int(ceil(player.max_hp)))):
+@@ -1465,16 +1581,22 @@
+   else: draw_arc(e.pos,e.radius*(1-e.ttl/0.3),0,TAU,40,Color(e.color,e.ttl/0.25),3,true)
+  draw_set_transform(Vector2.ZERO)
+  draw_sidebar()
+- if item_time>0 and speech.active.is_empty():
++ if item_time>0:
+   var a = minf(1,item_time)
+   draw_rect(Rect2(188,163,664,82),Color(0.05,0.08,0.13,0.93*a))
+   centered(item_banner,Vector2(520,197),25,Color(WHITE,a))
+-  centered(item_detail,Vector2(520,225),16,Color(CYAN,a))
++  wrapped(item_detail,Vector2(210,222),620,16,Color(CYAN,a),20)
+  if near_pickup>=0 and near_pickup<pickups.size():
+   var pickup = pickups[near_pickup]
+   var caption = pickup_caption(pickup)
+   if pickup.price>0: caption += " · %d Münzen" % price_of(pickup)
+-  if pickup.type in ["event","portal"]: wrapped(caption,Vector2(110,685),820,15,GOLD,20)
++  if pickup.type == "item":
++   panel(Rect2(110,637,820,89),Color("142235"))
++   var desc = Catalog.item(pickup.id).desc
++   var blocked = mutation_block_reason(pickup.id)
++   wrapped(desc+(" · "+blocked if blocked != "" else ""),Vector2(128,688),782,14,WHITE,18)
++   text_at(caption,Vector2(128,665),16,GOLD)
++  elif pickup.type in ["event","portal"]: wrapped(caption,Vector2(110,685),820,15,GOLD,20)
+   else: centered(caption,Vector2(520,704),16,GOLD)
+  if touch_enabled:
+   for info in [[touch_left,touch_origin,touch_move],[touch_right,touch_aim_origin,touch_aim]]:
+@@ -1486,13 +1608,10 @@
+ func draw_room() -> void:
+  panel(Rect2(48,136,944,608),Color("263144"))
+  draw_rect(ARENA,Color("182232"))
+- for x in range(80,960,48):
+-  for y in range(170,730,48):
+-   draw_rect(Rect2(x,y,46,46),Color(0.13,0.18,0.25,0.5) if (x+y)%96 == 0 else Color(0.10,0.15,0.22,0.5))
+  var biome_id = current_biome().id
+  var tile = art.texture("biome/"+biome_id+"/floor")
+  if tile:
+-  draw_texture_rect(tile,ARENA,true)
++  draw_texture_rect(tile,ARENA,false)
+  var background = art.texture("biome/"+biome_id+"/background")
+  if background: draw_texture_rect(background,ARENA,false)
+  var overlay = art.texture("biome/"+biome_id+"/"+room.type)
+@@ -1536,7 +1655,7 @@
+  elif room.type == "rest": centered("REGENERATION",Vector2(520,290),19,CYAN)
+  elif room.type == "transition":
+   centered("ÜBERGANGSKAMMER · "+current_biome().name,Vector2(520,325),19,CYAN)
+-  centered("E am Portal: Versuch abschließen" if floor_number == FLOOR_COUNT else "Wähle deinen nächsten Weg. Die Portale zeigen Gefahr und Belohnung.",Vector2(520,360),15,MUTED)
++  centered("Evakuieren oder weitermachen? Dein Genom bleibt beim Weitergehen erhalten." if floor_number>=5 else "Wähle deinen nächsten Weg. Die Portale zeigen Gefahr und Belohnung.",Vector2(520,360),15,MUTED)
+  elif room.type in ["lab","sacrifice","challenge","unstable"]:
+   for event in Catalog.EVENTS:
+    if event.id == room.type:
+@@ -1551,9 +1670,13 @@
+  if enemy.burn>0: color = Color("ff865a")
+  if enemy.slow>0: draw_arc(enemy.pos,enemy.radius+5,0,TAU,20,Color("7bc2ff"),2,true)
+  if enemy.telegraph>0:
+-  var direction = (player.pos-enemy.pos).normalized()
++  var direction = ((enemy.target if enemy.kind in [2,5,12,16] else player.pos)-enemy.pos).normalized()
+   draw_line(enemy.pos,enemy.pos+direction*230,Color(PINK,0.4),5,true)
+   draw_arc(enemy.pos,enemy.radius+8,0,TAU,24,PINK,3,true)
++ if enemy.kind>=13:
++  draw_arc(enemy.pos,enemy.radius+7,0,TAU,24,color,2,true)
++  text_at(Catalog.enemy(enemy.kind).name,enemy.pos+Vector2(-32,-32),10,color)
++  if enemy.kind == 14 and enemy.telegraph>0: draw_arc(enemy.target,42,0,TAU,32,PINK,2,true)
+  var key = enemy_art_key(enemy)
+  if not draw_sprite(key,enemy.pos,Vector2.ONE*(96 if enemy.boss>=0 else 48),enemy.state,enemy.facing,enemy.anim):
+   draw_creature(enemy.pos,enemy.radius,color,enemy.kind,(player.pos-enemy.pos).normalized())
+@@ -1637,9 +1760,10 @@
+    draw_arc(pos,32,0,TAU,40,CYAN,3,true)
+    draw_arc(pos,22,timer,timer+PI*1.5,32,CYAN.darkened(0.5),4,true)
+    centered("↓",pos+Vector2(0,11),28,CYAN)
++   if pickup.type == "finish": centered("EVAKUIEREN",pickup.pos+Vector2(0,58),15,GOLD)
+    if pickup.type == "portal":
+     centered(Catalog.BIOMES[pickup.destination].name,pickup.pos+Vector2(0,58),14,GOLD if pickup.get("risk",false) else CYAN)
+-    centered("INSTABIL · MEHR BEUTE" if pickup.get("risk",false) else "REGULÄR",pickup.pos+Vector2(0,78),12,MUTED)
++    centered(("ENDLESS" if floor_number>=10 else "ZWEITER ZYKLUS") if floor_number>=5 else "INSTABIL · MEHR BEUTE" if pickup.get("risk",false) else "REGULÄR",pickup.pos+Vector2(0,78),12,MUTED)
+     centered(Catalog.BIOMES[pickup.destination].reward,pickup.pos+Vector2(0,97),12,MUTED)
+  if pickup.type in ["coin","heal","bomb"]: draw_prop(pickup.type,pos,Vector2(28,28))
+  if pickup.price>0: centered("%d ¤" % price_of(pickup),pickup.pos+Vector2(0,51),17,GOLD)
+@@ -1684,11 +1808,14 @@
+   var item = Catalog.item(inventory[i])
+   var pos = Vector2(1050+(i%6)*33,493+int(i/6)*34)
+   draw_item_icon(item.id,pos,10,[CYAN,PINK,GOLD][item.rarity])
+- text_at("WASD   Bewegen",Vector2(1032,611),14,MUTED)
+- text_at("Pfeile / Maus   Feuer",Vector2(1032,635),14,MUTED)
+- text_at("Leertaste   Sprint   ·   Q   Bombe",Vector2(1032,659),13,MUTED)
+- text_at("E   Nehmen   ·   Tab   Karte",Vector2(1032,683),13,MUTED)
+- text_at("Startwert: %d" % seed_value,Vector2(1032,717),11,MUTED)
++ if not pickup_history.is_empty():
++  text_at("ZULETZT AUFGENOMMEN",Vector2(1032,587),12,CYAN)
++  wrapped(pickup_history[0].name,Vector2(1032,608),195,14,GOLD,18)
++ text_at("WASD   Bewegen",Vector2(1032,642),12,MUTED)
++ text_at("Pfeile / Maus   Feuer",Vector2(1032,680),12,MUTED)
++ text_at("Leertaste   Sprint   ·   Q   Bombe",Vector2(1032,699),11,MUTED)
++ text_at("E Nehmen · Tab Karte · I Genom",Vector2(1032,718),10,MUTED)
++ text_at("Startwert: %d" % seed_value,Vector2(1032,734),10,MUTED)
+ func draw_minimap(rect: Rect2,reveal: bool) -> void:
+  var visible: Array = []
+  for p in rooms:
+@@ -1749,6 +1876,9 @@
+  await RenderingServer.frame_post_draw
+  var image = get_viewport().get_texture().get_image()
+  image.save_png("user://screenshot.png")
++ screen = "testing"
++ sound.stop_all()
++ await get_tree().create_timer(0.06).timeout
+  get_tree().quit()
+ 
+ # Integration checks run inside the engine, without changing the real player's save.
+@@ -1840,6 +1970,8 @@
+  player.hp = 6
+  update_shots(0.016)
+  if player.hp != 5: failures.append("Direct blood hit must damage player")
++ inventory.clear()
++ recalculate_stats()
+  # Shops must deduct coins exactly once; treasure choices consume both pedestals.
+  screen = "game"
+  room = {"type":"shop","cleared":true,"choice":false}
+@@ -1890,16 +2022,99 @@
+  interact_event(offer)
+  interact_event(offer)
+  if inventory.size()!=before+2 or not is_equal_approx(curse_speed,old_curse*1.25): failures.append("Unstable offer must be consumed once")
++ # Duplicate and incompatible pickups cannot spend coins or consume choices.
++ inventory.clear()
++ recalculate_stats()
++ take_item("twin")
++ var unique_count = inventory.size()
++ take_item("twin")
++ take_item("triple")
++ if inventory.size()!=unique_count: failures.append("Duplicate / multishot exclusion")
++ take_item("poison")
++ take_item("burn")
++ take_item("ice")
++ if has_item("burn") or has_item("ice"): failures.append("Element exclusion")
++ take_item("explode")
++ take_item("split")
++ if has_item("split"): failures.append("Payload exclusion")
++ room = {"type":"shop","cleared":true,"choice":false}
++ pickups = [make_pickup("item",player.pos,"triple")]
++ pickups[0].price = 12
++ player.coins = 30
++ speech.reset()
++ interact()
++ if player.coins!=30 or pickups.size()!=1: failures.append("Blocked shop must be atomic")
++ # Exhausted pool must return supplies instead of prohibited duplicates.
++ inventory = Catalog.ITEMS.map(func(i): return i.id)
++ if roll_item()!= "" or make_pickup("item",CENTER,roll_item()).type != "heal": failures.append("Exhausted pool fallback")
++ recalculate_stats()
++ if player.damage>18 or player.rate>8 or player.max_hp>16 or player.armor>0.45 or player.crit>0.60: failures.append("Stat caps")
++ # Overlapping pools cannot multiply damage.
++ inventory.clear()
++ recalculate_stats()
++ var pool_target = make_enemy(0,CENTER)
++ foes = [pool_target]
++ hazards.clear()
++ for n in range(15): hazards.append({"type":"friendly_pool","pos":CENTER,"timer":2.0,"radius":40.0,"age":0.0})
++ var pool_hp = pool_target.hp
++ update_hazards(0.1)
++ if not is_equal_approx(pool_hp-pool_target.hp,0.5): failures.append("Pool overlap limit")
++ # Play all transitions: every boss once in ten floors; Endless remains valid.
++ character = 0
++ begin_run()
++ var encountered: Array = []
++ for f in range(1,16):
++  floor_number = f
++  generate_floor()
++  for coord in rooms:
++   if rooms[coord].type == "boss": encountered.append(rooms[coord].boss_index)
++  room = {"type":"transition","cleared":true,"choice":false,"pickups":[],"enemies":[],"obstacles":[]}
++  populate_route_choices()
++  var portal = room.pickups.filter(func(p): return p.type == "portal")[0]
++  pickups = room.pickups
++  if f>=5 and not pickups.any(func(p): return p.type == "finish"): failures.append("Missing evacuation")
++  speech.reset()
++  player.pos = portal.pos
++  interact()
++  if floor_number != f+1: failures.append("Continuation failed at floor %d" % f)
++ var first_ten = encountered.slice(0,10)
++ for index in range(10):
++  if first_ten.count(index)!=1: failures.append("Ten-boss variety")
++ if profile.data.wins!=1: failures.append("Milestone counted more than once")
++ # Save payload must retain route, boss sequence, history, and risk after serialization.
++ var saved = {"version":4,"floor":floor_number,"route":route,"boss_order":boss_order,"history":pickup_history,"rooms":rooms,"player":player}
++ var restored = bytes_to_var(var_to_bytes(saved))
++ if restored.route!=route or restored.boss_order!=boss_order or restored.floor!=floor_number: failures.append("Run serialization")
++ # Resume through the real load path, using an in-memory test profile.
++ var resume_state = {"version":4,"seed":seed_value,"rng":rng.state,"rooms":rooms,"current":current,"floor":floor_number,"player":player,"inventory":inventory,"character":character,"hard":hard,"route":route,"risk":run_risk,"curse_speed":curse_speed,"hp_cost":run_hp_cost,"synergies":found_synergies,"run_time":run_time,"kills":kills_run,"clears":clears,"phoenix":phoenix_used,"attack_count":attack_count,"boss_order":boss_order,"milestone_claimed":milestone_claimed,"history":pickup_history}
++ profile.memory_run = bytes_to_var(var_to_bytes(resume_state))
++ var resume_floor = floor_number
++ var resume_route = route.duplicate()
++ floor_number = 1
++ route = [0]
++ continue_run()
++ if floor_number!=resume_floor or route!=resume_route or current!=resume_state.current: failures.append("Actual checkpoint resume")
++ # Music pause is independent of sound-effect volume.
++ var old_volume = sound.volume
++ sound.music_enabled = false
++ sound._process(0.01)
++ if not sound.music.stream_paused or sound.volume!=old_volume: failures.append("Independent music switch")
++ sound.music_enabled = true
++ sound._process(0.01)
++ if sound.music.stream_paused and sound.volume>0: failures.append("Music restore")
+  profile = real_profile
++ screen = "testing"
++ sound.stop_all()
++ await get_tree().create_timer(0.06).timeout
+  if failures.is_empty():
+-  print("SMOKE TEST PASSED: 500 floor graphs, 64 mutation synergy test, 10 bosses, shops, treasure choices, dialogue, branches and event transactions.")
++  print("SMOKE TEST PASSED: 1000 floor graphs, 64 mutation acquisition checks, 16 enemy AI paths, 10 boss patterns, 15-floor progression, shops, exclusions, caps, pool overlap, serialization, independent music toggle.")
+   get_tree().quit(0)
+  else:
+   for failure in failures: push_error(failure)
+   get_tree().quit(1)
+ 
+ func effective_rate() -> float:
+- return maxf(1.2,player.rate)*(1.35 if has_item("turbo") and move_input().length()<0.1 else 1.0)
++ return minf(10,maxf(1.2,player.rate)*(1.35 if has_item("turbo") and move_input().length()<0.1 else 1.0))
+ func update_player_animation(dt: float,moved: Vector2) -> void:
+  player_shoot_anim = maxf(0,player_shoot_anim-dt)
+  step_cd -= dt
+@@ -1917,7 +2132,7 @@
+ func enemy_art_key(enemy: Dictionary) -> String:
+  if enemy.boss>=0: return "boss/"+Catalog.BOSSES[enemy.boss].kind
+  if enemy.kind == 6 and enemy.headless: return "enemy/decapitator_headless"
+- return "enemy/"+Catalog.enemy(enemy.kind).id
++ return "enemy/"+Catalog.enemy(enemy.kind).get("art_id",Catalog.enemy(enemy.kind).id)
+ func decapitate(enemy: Dictionary,reward: bool=true) -> void:
+  if enemy.headless or enemy.dead: return
+  enemy.headless = true
+@@ -2020,12 +2235,20 @@
+   var foe = candidates[chatter_rng.randi_range(0,candidates.size()-1)]
+   var spec = Catalog.enemy(foe.kind)
+   var line = speech.choice(speech.data.get("enemies",{}).get(spec.id,[]),chatter_rng)
+-  if line != "": speech.say("enemy/"+spec.id,spec.name,line,"neutral")
++  if line != "": speech.say("enemy/"+spec.get("art_id",spec.id),spec.name,line,"neutral")
+  elif chatter_rng.randf()<0.4:
+   var line = speech.choice(speech.data.get("ai",[]),chatter_rng)
+   if line != "": speech.say("ai","LABOR-KI",line)
+ func draw_dialogue(rect: Rect2) -> void:
+  if speech.active.is_empty(): return
++ if screen == "game":
++  panel(rect,Color("152237"))
++  var portrait = art.texture("portrait/"+speech.active.speaker+"/"+speech.active.emotion)
++  if portrait: draw_texture_rect(portrait,Rect2(rect.position+Vector2(5,4),Vector2(36,36)),false)
++  text_at(speech.active.name,rect.position+Vector2(49,16),11,CYAN)
++  var line = speech.visible_text()+("  [E: weiter]" if speech.blocks_combat() else "")
++  wrapped(line,rect.position+Vector2(49,28),rect.size.x-62,13,WHITE,16)
++  return
+  var tex = art.texture("ui/dialogue_box")
+  if tex: draw_texture_rect(tex,rect,false)
+  else:
+@@ -2049,15 +2272,20 @@
+   for event in Catalog.EVENTS:
+    if event.id == pickup.id: return "E · "+event.desc
+  if pickup.type == "finish": return "E · VERSUCH ABSCHLIESSEN"
++ if pickup.type == "portal" and floor_number>=5: return "E · "+("ENDLESS STARTEN" if floor_number == 10 else "WEITER ZU BOSS %d" % (floor_number+1))+" · Genom behalten"
+  if pickup.type == "portal": return "E · "+Catalog.BIOMES[pickup.destination].name+" · "+Catalog.BIOMES[pickup.destination].danger+(" · INSTABIL: stärkere Gegner, mehr Beute" if pickup.get("risk",false) else "")
+  return "E · "+(Catalog.item(pickup.id).name if pickup.type == "item" else "Heilung" if pickup.type == "heal" else "Bombe")
+ func populate_route_choices() -> void:
+  room.pickups.append(make_pickup("heal",Vector2(520,580)))
+- if floor_number == FLOOR_COUNT:
+-  room.pickups.append(make_pickup("finish",Vector2(520,455)))
++ if floor_number>=5:
++  room.pickups.append(make_pickup("finish",Vector2(340,455)))
++  var portal = make_pickup("portal",Vector2(700,455))
++  portal.destination = int(route[(floor_number-5)%5])
++  portal.risk = false
++  room.pickups.append(portal)
+   return
+  var options: Array = []
+- if floor_number == FLOOR_COUNT-1: options = [4]
++ if floor_number == 4: options = [4]
+  else:
+   for id in [1,2,3]:
+    if not id in route: options.append(id)
+@@ -2067,6 +2295,20 @@
+   portal.destination = options[mini(i,options.size()-1)]
+   portal.risk = options.size() == 1 and i == 1
+   room.pickups.append(portal)
++
++func claim_milestone() -> void:
++ if milestone_claimed: return
++ milestone_claimed = true
++ profile.data.wins += 1
++ unlock("win")
++ profile.save_profile()
++
++func toggle_music() -> void:
++ profile.data.music_enabled = not profile.data.music_enabled
++ sound.music_enabled = profile.data.music_enabled
++ profile.save_profile()
++ options_menu()
++
+ func has_synergy(id: String) -> bool:
+  for combo in Catalog.SYNERGIES:
+   if combo.id == id: return combo.requires.all(func(item_id): return has_item(item_id))
+@@ -2079,12 +2321,17 @@
+    speak_player(speech.choice(speech.data.get("synergy",[]),chatter_rng),"happy",true)
+ func recalculate_stats() -> void:
+  var c = Catalog.CHARACTERS[character]
+- var stats = {"max_hp":c.hp-run_hp_cost,"damage":c.damage,"speed":c.speed,"rate":c.rate,"shot_speed":470.0,"range":620.0,"crit":0.12 if character == 1 else 0.03,"armor":0.0}
++ var stats = {"max_hp":c.hp,"damage":c.damage,"speed":c.speed,"rate":c.rate,"shot_speed":470.0,"range":620.0,"crit":0.12 if character == 1 else 0.03,"armor":0.0}
+  for id in inventory:
+   for key in Catalog.item(id).stat: stats[key] += Catalog.item(id).stat[key]
+- stats.max_hp = maxf(2,stats.max_hp)
+- stats.speed = clampf(stats.speed,130,360)
+- stats.shot_speed = maxf(150,stats.shot_speed)
++ stats.max_hp = maxf(2,clampf(stats.max_hp,2,16)-run_hp_cost)
++ stats.speed = clampf(stats.speed,130,340)
++ stats.shot_speed = clampf(stats.shot_speed,150,850)
++ stats.damage = clampf(stats.damage if stats.damage<=10 else 10+(stats.damage-10)*0.45,0.8,18)
++ stats.rate = clampf(stats.rate if stats.rate<=5 else 5+(stats.rate-5)*0.5,1.2,8)
++ stats.crit = clampf(stats.crit,0,0.60)
++ stats.armor = clampf(stats.armor,0,0.45)
++ stats.range = clampf(stats.range,200,1200)
+  for key in stats: player[key] = stats[key]
+  player.hp = minf(player.hp,player.max_hp)
+ func remove_item(id: String) -> void:
+@@ -2100,23 +2347,49 @@
+     notify("Ohne Mutation gibt es nichts zu tauschen.")
+     return
+    var old_id = str(inventory.back())
++   var old_player = player.duplicate(true)
++   var old_inventory = inventory.duplicate()
+    remove_item(old_id)
+-   take_item(roll_item([old_id]))
++   var replacement = roll_item([old_id])
++   if replacement == "":
++    player = old_player
++    inventory = old_inventory
++    notify("Keine passende Ersatzmutation verfügbar.")
++    return
++   take_item(replacement)
+   "sacrifice":
+    if player.max_hp<=3:
+     notify("Dafür brauchst du mindestens 4 maximale LP.")
+     return
++   var reward = roll_item([],2)
++   if reward == "":
++    notify("Keine passende Mutation verfügbar. Deine LP bleiben erhalten.")
++    return
+    run_hp_cost += 2
+    recalculate_stats()
+-   take_item(roll_item([],2))
++   take_item(reward)
+   "unstable":
+-   curse_speed *= 1.25
+-   take_item(roll_item())
+-   take_item(roll_item())
+-   notify("INSTABILITÄT · Feindliche Geschosse sind ab jetzt 25% schneller.")
++   if eligible_items().size()<2:
++    notify("Nicht genug passende Mutationen verfügbar.")
++    return
++   var first = roll_item()
++   var old_player = player.duplicate(true)
++   inventory.append(first)
++   recalculate_stats()
++   var second = roll_item()
++   inventory.pop_back()
++   player = old_player
++   if second == "":
++    notify("Diese Genbank enthält keine zwei kompatiblen Mutationen.")
++    return
++   var previous_speed = curse_speed
++   curse_speed = minf(1.75,curse_speed*1.25)
++   take_item(first)
++   take_item(second)
++   notify("INSTABILITÄT · Geschosstempo +%d%%; insgesamt %d%% vom Basiswert." % [int(round((curse_speed/previous_speed-1)*100)),int(round(curse_speed*100))])
+   "challenge":
+    room.cleared = false
+-   var count = 4+floor_number
++   var count = mini(12,5+int(floor_number/2))
+    var kinds = current_biome().enemies
+    for n in range(count):
+     var pos = CENTER+Vector2.from_angle(n*TAU/count)*190
+@@ -2128,3 +2401,55 @@
+  room.event_used = true
+  pickups.erase(pickup)
+  save_checkpoint()
++
++func genome_menu(new_page: int) -> void:
++ screen = "genome"
++ page = clampi(new_page,0,maxi(0,int(ceil(inventory.size()/6.0))-1))
++ clear_ui()
++ button("◀",Rect2(140,718,80,44),func(): genome_menu(page-1))
++ button("▶",Rect2(235,718,80,44),func(): genome_menu(page+1))
++ button("WEITERSPIELEN",Rect2(875,718,240,44),resume_game)
++
++func draw_genome() -> void:
++ draw_rect(Rect2(0,0,1280,800),Color(0.025,0.04,0.07,0.96))
++ text_at("DEIN GENOM / FUNDPROTOKOLL",Vector2(140,76),28,CYAN)
++ text_at("Jede Mutation einmal · I oder Esc: schließen · Seite %d" % (page+1),Vector2(140,109),15,MUTED)
++ if inventory.is_empty(): text_at("Noch keine Mutation eingesammelt.",Vector2(160,220),20,WHITE)
++ for i in range(6):
++  var index = page*6+i
++  if index>=inventory.size(): break
++  var item = Catalog.item(inventory[index])
++  var y = 140+i*78
++  panel(Rect2(140,y,975,69))
++  draw_item_icon(item.id,Vector2(171,y+33),15,[CYAN,PINK,GOLD][item.rarity])
++  text_at("%02d  %s" % [index+1,item.name],Vector2(203,y+24),17,GOLD)
++  wrapped(item.desc,Vector2(203,y+47),885,14,WHITE,17)
++ text_at("Grenzen: 16 LP · 18 Grundschaden · 8/s (10/s mit Ruhepol) · 60% Krit · 45% Abwehr",Vector2(140,650),15,MUTED)
++ text_at("Ausschlüsse: Zwilling / Dreifach · Gift / Glut / Kälte · Explosion / Splitter",Vector2(140,681),15,MUTED)
++
++func screenshot_scenario() -> void:
++ begin_run()
++ var scenario = OS.get_environment("MUTATION_PREVIEW")
++ if scenario == "options": options_menu()
++ elif scenario == "genome":
++  for id in ["triple","poison","heavy","chain","orbit","heart"]: take_item(id)
++  genome_menu(0)
++ elif scenario == "transition":
++  floor_number = 10
++  route = [0,1,2,3,4,0,1,2,3,4]
++  room = {"type":"transition","cleared":true,"choice":false,"pickups":[],"enemies":[],"obstacles":[]}
++  populate_route_choices()
++  pickups = room.pickups
++  foes.clear()
++ elif scenario == "pickup":
++  take_item("triple")
++  item_time = 7
++  speech.active.time = 3
++  speech.active.duration = 12
++ elif scenario == "enemies":
++  foes.clear()
++  for kind in range(13,17): foes.append(make_enemy(kind,Vector2(300+(kind-13)*150,370)))
++  room.cleared = false
++  room.type = "combat"
++ toast_time = 0
++ await take_screenshot()
+--- a/scripts/catalog.gd
++++ b/scripts/catalog.gd
+@@ -59,10 +59,10 @@
+  {
+   "id": "armor",
+   "name": "Chitinpanzer",
+-  "desc": "25% Chance, einen Treffer abzuwehren.",
+-  "rarity": 1,
+-  "stat": {
+-   "armor": 0.25
++  "desc": "20% Abwehrchance. Gesamte Abwehr ist auf 45% begrenzt.",
++  "rarity": 1,
++  "stat": {
++   "armor": 0.2
+   }
+  },
+  {
+@@ -75,21 +75,21 @@
+  {
+   "id": "poison",
+   "name": "Giftblase",
+-  "desc": "Treffer vergiften Gegner: 2 Schaden/s.",
++  "desc": "2 Giftschaden/s für 3 s. Gift, Glut und Kälte schließen sich aus.",
+   "rarity": 1,
+   "stat": {}
+  },
+  {
+   "id": "burn",
+   "name": "Glutorgan",
+-  "desc": "Treffer entzünden: 3 Schaden/s für 2 s.",
++  "desc": "3 Brandschaden/s für 2 s. Gift, Glut und Kälte schließen sich aus.",
+   "rarity": 1,
+   "stat": {}
+  },
+  {
+   "id": "ice",
+   "name": "Kältenerv",
+-  "desc": "Treffer verlangsamen Gegner um 45%.",
++  "desc": "Treffer verlangsamen 2 s um 45%. Gift, Glut und Kälte schließen sich aus.",
+   "rarity": 1,
+   "stat": {}
+  },
+@@ -121,20 +121,16 @@
+  {
+   "id": "twin",
+   "name": "Zwillingsdrüse",
+-  "desc": "Zwei Schüsse gleichzeitig; -0.4 Schaden.",
+-  "rarity": 1,
+-  "stat": {
+-   "damage": -0.4
+-  }
++  "desc": "Zwei Schüsse pro Angriff, je 65% Schaden. Ersetzt keine Dreifachiris; beide schließen sich aus.",
++  "rarity": 1,
++  "stat": {}
+  },
+  {
+   "id": "triple",
+   "name": "Dreifachiris",
+-  "desc": "Drei Schussrichtungen; -0.6 Schaden.",
+-  "rarity": 2,
+-  "stat": {
+-   "damage": -0.6
+-  }
++  "desc": "Drei Richtungen, je 50% Schaden. Nicht mit Zwillingsdrüse kombinierbar.",
++  "rarity": 2,
++  "stat": {}
+  },
+  {
+   "id": "rear",
+@@ -170,7 +166,7 @@
+  {
+   "id": "explode",
+   "name": "Drucksack",
+-  "desc": "Schüsse explodieren beim ersten Treffer.",
++  "desc": "Treffer explodieren mit 45% Schaden. Nicht mit Splittermark kombinierbar.",
+   "rarity": 2,
+   "stat": {}
+  },
+@@ -312,7 +308,7 @@
+  {
+   "id": "crown",
+   "name": "Mutantenkrone",
+-  "desc": "+0.3 Schaden für jede Mutation im Inventar.",
++  "desc": "+0.2 Schaden je Mutation, maximal +4 Schaden.",
+   "rarity": 2,
+   "stat": {},
+   "unlock": "items_10"
+@@ -794,18 +790,154 @@
+  }
+ ]
+ const ENEMIES = [
+- {"id":"crawler","kind":0,"name":"Kriecher","hp":11.0,"radius":16.0,"color":"ed88c5","desc":"Verfolgt die Probe."},
+- {"id":"spitter","kind":1,"name":"Spucker","hp":16.0,"radius":18.0,"color":"aca3ef","desc":"Hält Abstand und schießt gezielt."},
+- {"id":"charger","kind":2,"name":"Rammbock","hp":22.0,"radius":22.0,"color":"e8b66c","desc":"Warnt mit einem Strahl vor seinem Ansturm."},
+- {"id":"turret","kind":3,"name":"Ringdrüse","hp":18.0,"radius":19.0,"color":"ff806f","desc":"Feuert Geschossringe."},
+- {"id":"larva","kind":4,"name":"Larve","hp":13.0,"radius":15.0,"color":"a5db8b","desc":"Klein und schnell."},
+- {"id":"decapitator","kind":6,"name":"Blutläufer","hp":30.0,"radius":20.0,"color":"e86585","desc":"Kopf mit eigener Trefferzone. Kopflos läuft er panisch und spritzt Blutgeschosse."},
+- {"id":"splitter","kind":7,"name":"Teilungssack","hp":24.0,"radius":22.0,"color":"b5d674","desc":"Zerfällt nach dem Tod in zwei Larven."},
+- {"id":"blinker","kind":8,"name":"Phasengeist","hp":20.0,"radius":18.0,"color":"9bb4f1","desc":"Teleportiert nach einer Warnung und schießt einen Fächer."},
+- {"id":"shieldbug","kind":9,"name":"Schildkäfer","hp":26.0,"radius":23.0,"color":"ddb786","desc":"Fronttreffer verursachen nur 25% Schaden. Flankiere ihn."},
+- {"id":"leech","kind":10,"name":"Münzegel","hp":18.0,"radius":17.0,"color":"dd8dac","desc":"Schneller Verfolger. Kontakt stiehlt zusätzlich eine Münze."},
+- {"id":"spore","kind":11,"name":"Sporenträger","hp":22.0,"radius":20.0,"color":"89c985","desc":"Legt Sporenfelder, die Schaden verursachen und Tempo senken."},
+- {"id":"sniper","kind":12,"name":"Nadelauge","hp":16.0,"radius":17.0,"color":"eab99b","desc":"Kündigt einen schnellen Präzisionsschuss mit einem Laser an."}
++ {
++  "id": "crawler",
++  "kind": 0,
++  "name": "Kriecher",
++  "hp": 11.0,
++  "radius": 16.0,
++  "color": "ed88c5",
++  "desc": "Verfolgt die Probe."
++ },
++ {
++  "id": "spitter",
++  "kind": 1,
++  "name": "Spucker",
++  "hp": 16.0,
++  "radius": 18.0,
++  "color": "aca3ef",
++  "desc": "Hält Abstand und schießt gezielt."
++ },
++ {
++  "id": "charger",
++  "kind": 2,
++  "name": "Rammbock",
++  "hp": 22.0,
++  "radius": 22.0,
++  "color": "e8b66c",
++  "desc": "Warnt mit einem Strahl vor seinem Ansturm."
++ },
++ {
++  "id": "turret",
++  "kind": 3,
++  "name": "Ringdrüse",
++  "hp": 18.0,
++  "radius": 19.0,
++  "color": "ff806f",
++  "desc": "Feuert Geschossringe."
++ },
++ {
++  "id": "larva",
++  "kind": 4,
++  "name": "Larve",
++  "hp": 13.0,
++  "radius": 15.0,
++  "color": "a5db8b",
++  "desc": "Klein und schnell."
++ },
++ {
++  "id": "decapitator",
++  "kind": 6,
++  "name": "Blutläufer",
++  "hp": 30.0,
++  "radius": 20.0,
++  "color": "e86585",
++  "desc": "Kopf mit eigener Trefferzone. Kopflos läuft er panisch und spritzt Blutgeschosse."
++ },
++ {
++  "id": "splitter",
++  "kind": 7,
++  "name": "Teilungssack",
++  "hp": 24.0,
++  "radius": 22.0,
++  "color": "b5d674",
++  "desc": "Zerfällt nach dem Tod in zwei Larven."
++ },
++ {
++  "id": "blinker",
++  "kind": 8,
++  "name": "Phasengeist",
++  "hp": 20.0,
++  "radius": 18.0,
++  "color": "9bb4f1",
++  "desc": "Teleportiert nach einer Warnung und schießt einen Fächer."
++ },
++ {
++  "id": "shieldbug",
++  "kind": 9,
++  "name": "Schildkäfer",
++  "hp": 26.0,
++  "radius": 23.0,
++  "color": "ddb786",
++  "desc": "Fronttreffer verursachen nur 25% Schaden. Flankiere ihn."
++ },
++ {
++  "id": "leech",
++  "kind": 10,
++  "name": "Münzegel",
++  "hp": 18.0,
++  "radius": 17.0,
++  "color": "dd8dac",
++  "desc": "Schneller Verfolger. Kontakt stiehlt zusätzlich eine Münze."
++ },
++ {
++  "id": "spore",
++  "kind": 11,
++  "name": "Sporenträger",
++  "hp": 22.0,
++  "radius": 20.0,
++  "color": "89c985",
++  "desc": "Legt Sporenfelder, die Schaden verursachen und Tempo senken."
++ },
++ {
++  "id": "sniper",
++  "kind": 12,
++  "name": "Nadelauge",
++  "hp": 16.0,
++  "radius": 17.0,
++  "color": "eab99b",
++  "desc": "Kündigt einen schnellen Präzisionsschuss mit einem Laser an."
++ },
++ {
++  "id": "medic",
++  "art_id": "spore",
++  "kind": 13,
++  "name": "Nährer",
++  "hp": 20.0,
++  "radius": 18.0,
++  "color": "74f5cc",
++  "desc": "Heilt verletzte Verbündete alle 2.4 s um 3 LP. Türkise Verbindung zeigt das Ziel. Heilt keine Bosse."
++ },
++ {
++  "id": "mortar",
++  "art_id": "turret",
++  "kind": 14,
++  "name": "Mörserdrüse",
++  "hp": 22.0,
++  "radius": 19.0,
++  "color": "ffad66",
++  "desc": "Markiert deinen Standort und bombardiert ihn nach einer Warnung. Verlasse den Kreis."
++ },
++ {
++  "id": "stalker",
++  "art_id": "larva",
++  "kind": 15,
++  "name": "Kreisläufer",
++  "hp": 18.0,
++  "radius": 16.0,
++  "color": "c39bff",
++  "desc": "Umläuft dich seitlich und schießt zwei langsame Geschosse."
++ },
++ {
++  "id": "volatile",
++  "art_id": "charger",
++  "kind": 16,
++  "name": "Berstling",
++  "hp": 16.0,
++  "radius": 20.0,
++  "color": "ff6666",
++  "desc": "Kündigt einen geraden Ansturm an und explodiert danach am Endpunkt. Töte ihn vorher."
++ }
+ ]
+ const SYNERGIES = [
+  {
+--- a/scripts/dungeon.gd
++++ b/scripts/dungeon.gd
+@@ -1,7 +1,7 @@
+ extends RefCounted
+ const DIRECTIONS = [Vector2i.LEFT,Vector2i.RIGHT,Vector2i.UP,Vector2i.DOWN]
+ static func generate(rng: RandomNumberGenerator, floor_number: int, biome_index: int = -1) -> Dictionary:
+- if biome_index<0: biome_index = floor_number-1
++ if biome_index<0: biome_index = posmod(floor_number-1,5)
+  var rooms = {Vector2i.ZERO: make_room("start",rng)}
+  var frontier = [Vector2i.ZERO]
+  var target = 11 + mini(floor_number,3) * 2
+--- a/scripts/profile.gd
++++ b/scripts/profile.gd
+@@ -1,8 +1,9 @@
+ extends RefCounted
+-const PATH = "user://profile.json"
+-const RUN_PATH = "user://run.dat"
++const PATH = "user://balanced_profile.json"
++const RUN_PATH = "user://balanced_run.dat"
+ var memory_only = false
+-var data = {"version":1,"unlocks":[],"kills":0,"wins":0,"runs":0,"bosses":0,"seen":[],"volume":0.65,"shake":true,"best_floor":1,"dialogue_enabled":true}
++var memory_run: Dictionary = {}
++var data = {"version":1,"unlocks":[],"kills":0,"wins":0,"runs":0,"bosses":0,"seen":[],"volume":0.65,"shake":true,"best_floor":1,"dialogue_enabled":true,"music_enabled":true}
+ func load_profile() -> void:
+  if not FileAccess.file_exists(PATH):
+   return
+@@ -31,13 +32,14 @@
+  if file:
+   file.store_var(state)
+ func load_run() -> Dictionary:
++ if memory_only: return memory_run.duplicate(true)
+  if not FileAccess.file_exists(RUN_PATH):
+   return {}
+  var file = FileAccess.open(RUN_PATH,FileAccess.READ)
+  if not file:
+   return {}
+  var value = file.get_var(false)
+- if value is Dictionary and value.get("version",0) == 3:
++ if value is Dictionary and value.get("version",0) == 4:
+   return value
+  return {}
+ func clear_run() -> void:
+--- a/scripts/sound.gd
++++ b/scripts/sound.gd
+@@ -6,6 +6,8 @@
+ var volume = 0.65
+ var music: AudioStreamPlayer
+ var music_key = ""
++var music_enabled = true
++var testing_silent = false
+ func _ready() -> void:
+  var parsed = JSON.parse_string(FileAccess.get_file_as_string("res://assets/audio/audio_config.json"))
+  if parsed is Dictionary: config = parsed
+@@ -24,12 +26,13 @@
+  if key == music_key: return
+  music_key = key
+  music.stop()
++ if testing_silent: return
+  var info = config.get("music",{}).get(key,{})
+  if info.is_empty() or not ResourceLoader.exists(info.path): return
+  music.stream = load(info.path)
+  music.play()
+ func play(id: String) -> void:
+- if volume<=0 or not clips.has(id): return
++ if testing_silent or volume<=0 or not clips.has(id): return
+  var settings = config.get("effects",{}).get(id,{})
+  for voice in voices:
+   if not voice.playing:
+@@ -43,4 +46,16 @@
+  if music:
+   var settings = config.get("music",{}).get(music_key,{})
+   music.volume_db = linear_to_db(maxf(0.001,volume*float(config.get("music_volume",0.35))*float(settings.get("volume",1.0))))
+-  music.stream_paused = volume<=0
++  music.stream_paused = volume<=0 or not music_enabled
++
++func stop_all() -> void:
++ if music:
++  music.stop()
++  music.stream = null
++ for voice in voices:
++  voice.stop()
++  voice.stream = null
++ clips.clear()
++
++func _exit_tree() -> void:
++ stop_all()
+--- a/assets/asset_manifest.json
++++ b/assets/asset_manifest.json
+@@ -2617,9 +2617,9 @@
+   },
+   "biome/incubator/floor": {
+     "path": "res://assets/rooms/incubator/floor_tile.png",
+-    "width": 64,
+-    "height": 64,
+-    "purpose": "INKUBATOR wiederholbare Bodenfliese"
++    "width": 920,
++    "height": 584,
++    "purpose": "Durchgehende incubator-Plattform (kein Tiling)"
+   },
+   "biome/incubator/background": {
+     "path": "res://assets/rooms/incubator/room_background.png",
+@@ -2689,9 +2689,9 @@
+   },
+   "biome/reactor/floor": {
+     "path": "res://assets/rooms/reactor/floor_tile.png",
+-    "width": 64,
+-    "height": 64,
+-    "purpose": "REAKTOR wiederholbare Bodenfliese"
++    "width": 920,
++    "height": 584,
++    "purpose": "Durchgehende reactor-Plattform (kein Tiling)"
+   },
+   "biome/reactor/background": {
+     "path": "res://assets/rooms/reactor/room_background.png",
+@@ -2761,9 +2761,9 @@
+   },
+   "biome/marsh/floor": {
+     "path": "res://assets/rooms/marsh/floor_tile.png",
+-    "width": 64,
+-    "height": 64,
+-    "purpose": "MODERSUMPF wiederholbare Bodenfliese"
++    "width": 920,
++    "height": 584,
++    "purpose": "Durchgehende marsh-Plattform (kein Tiling)"
+   },
+   "biome/marsh/background": {
+     "path": "res://assets/rooms/marsh/room_background.png",
+@@ -2833,9 +2833,9 @@
+   },
+   "biome/ossuary/floor": {
+     "path": "res://assets/rooms/ossuary/floor_tile.png",
+-    "width": 64,
+-    "height": 64,
+-    "purpose": "KNOCHENARCHIV wiederholbare Bodenfliese"
++    "width": 920,
++    "height": 584,
++    "purpose": "Durchgehende ossuary-Plattform (kein Tiling)"
+   },
+   "biome/ossuary/background": {
+     "path": "res://assets/rooms/ossuary/room_background.png",
+@@ -2905,9 +2905,9 @@
+   },
+   "biome/void/floor": {
+     "path": "res://assets/rooms/void/floor_tile.png",
+-    "width": 64,
+-    "height": 64,
+-    "purpose": "NULLKERN wiederholbare Bodenfliese"
++    "width": 920,
++    "height": 584,
++    "purpose": "Durchgehende void-Plattform (kein Tiling)"
+   },
+   "biome/void/background": {
+     "path": "res://assets/rooms/void/room_background.png",
+--- a/assets/dialogue/dialogue_de.json
++++ b/assets/dialogue/dialogue_de.json
+@@ -2,217 +2,229 @@
+   "letters_per_second": 42,
+   "ambient_cooldown": 18.0,
+   "item_lines": {
+-	"triple": [
++    "triple": [
+       "Ey Alter, wie geil ist das denn? Jetzt kann ich drei von den Viechern gleichzeitig wegfetzen!"
+-	],
+-	"twin": [
++    ],
++    "twin": [
+       "Zwei Drüsen. Doppelter Ärger. Für euch."
+-	],
+-	"heart": [
++    ],
++    "heart": [
+       "Ein zweites Herz? Geil. Eins allein war eh überfordert."
+-	],
+-	"glass": [
++    ],
++    "glass": [
+       "Viel Schaden, wenig Leben. Klingt nach einer vernünftigen Entscheidung."
+-	],
+-	"poison": [
++    ],
++    "poison": [
+       "Das ist bestimmt nicht gesund. Für euch zumindest."
+-	],
+-	"burn": [
++    ],
++    "burn": [
+       "Okay, jetzt brennt es. Diesmal bin ich der Grund."
+-	],
+-	"ice": [
++    ],
++    "ice": [
+       "Ihr bleibt jetzt mal ganz entspannt. SEHR entspannt."
+-	],
+-	"heavy": [
++    ],
++    "heavy": [
+       "Der Arm wiegt gefühlt eine Tonne. Aber guck mal, wie weit du fliegst!"
+-	],
+-	"blooddash": [
++    ],
++    "blooddash": [
+       "Das ist meine Blutspur? Warum ist das meine Blutspur?!"
+-	],
+-	"vampire": [
++    ],
++    "vampire": [
+       "Ich wollte einen Snack. Nicht gleich einen Blutvertrag."
+-	],
+-	"phoenix": [
++    ],
++    "phoenix": [
+       "Eine zweite Chance. Diesmal verschwende ich sie bestimmt nicht."
+-	],
+-	"crown": [
++    ],
++    "crown": [
+       "Endlich erkennt hier jemand mein Talent."
+-	],
+-	"homing": [
++    ],
++    "homing": [
+       "Die Dinger suchen sich ihr Ziel selbst? Ich liebe diesen Service."
+-	],
+-	"boomerang": [
++    ],
++    "boomerang": [
+       "Kommt alles zurück. Sogar meine schlechte Entscheidung."
+-	],
+-	"orbit": [
++    ],
++    "orbit": [
+       "Ihr bekommt einen eigenen Sicherheitsabstand."
+-	],
+-	"drone": [
++    ],
++    "drone": [
+       "Du bist jetzt mein Kollege. Wir kündigen zusammen."
+-	],
+-	"explode": [
++    ],
++    "explode": [
+       "Jetzt mit extra Reinigungskosten."
+-	],
+-	"split": [
++    ],
++    "split": [
+       "Ein Treffer. Drei neue Probleme. Für euch!"
+-	]
++    ]
+   },
+   "generic_item": [
+-	"Okay. {item}. Ist das jetzt nh teil von mir?",
+-	"{item}? wtf ist das? Egal ist jetzt meins",
+-	"Das fühlt sich lowkey OP an. GEIL!",
+-	"Ich sollte das nicht anfassen. aber dafür ist es wohl zu spät",
+-	"Ey geil {item}! Kein Plan was das ist.",
+-	"Und was soll mir jetzt {item} jetzt sagen?",
+-	"Gubi Fortnite? Nein! {item}?",
+-	"Oh like maybe well meet at a bar well drive a funky {item}",
+-	"Absolute Psychose digga",
+-	"Hey its me its {item}"
++    "Okay. {item}. Ist das jetzt nh teil von mir?",
++    "{item}? wtf ist das? Egal ist jetzt meins",
++    "Das fühlt sich lowkey OP an. GEIL!",
++    "Ich sollte das nicht anfassen. aber dafür ist es wohl zu spät",
++    "Ey geil {item}! Kein Plan was das ist.",
++    "Und was soll mir jetzt {item} jetzt sagen?",
++    "Gubi Fortnite? Nein! {item}?",
++    "Oh like maybe well meet at a bar well drive a funky {item}",
++    "Absolute Psychose digga",
++    "Hey its me its {item}"
+   ],
+   "synergy": [
+-	"Okay, das passt zusammen. Bin ich jetzt Schlau?.",
++    "Okay, das passt zusammen. Bin ich jetzt Schlau?.",
+     "Diese Combi ist einfach nur broken..."
+   ],
+   "hurt": [
+-	"Aua. Das hat weh getahn Hundskribl nochmal.",
+-	"Okay, das hab ich aber gespürt :(",
+-	"I cant do Nathan!",
+-	"Ich hau dir gleich eine nei du Vogel!",
+-	"Aua die Rose hat mich gebissen!",
+-	"WO SIND MEINE TEAMMATES",
+-	"Ach f*ck dich doch du B*stard",
+-	"Darf ich fluchen? Es gibt blut in dem Spiel also Hoffe ich mal ja",
+-	"Ballright"
++    "Aua. Das hat weh getahn Hundskribl nochmal.",
++    "Okay, das hab ich aber gespürt :(",
++    "I cant do Nathan!",
++    "Ich hau dir gleich eine nei du Vogel!",
++    "Aua die Rose hat mich gebissen!",
++    "WO SIND MEINE TEAMMATES",
++    "Ach f*ck dich doch du B*stard",
++    "Darf ich fluchen? Es gibt blut in dem Spiel also Hoffe ich mal ja",
++    "Ballright"
+   ],
+   "low_hp": [
+-	"OKAY DIGGA GENUG JETZT ABER",
+-	"Nicht panisch werden. Einfach ... lock in gehn.",
+-	"Ballright bro lock in",
+-	"Hat jemand Medkit oder so?",
+-	"Bin gleich dead sh*t"
++    "OKAY DIGGA GENUG JETZT ABER",
++    "Nicht panisch werden. Einfach ... lock in gehn.",
++    "Ballright bro lock in",
++    "Hat jemand Medkit oder so?",
++    "Bin gleich dead sh*t"
+   ],
+   "bosses": {
+-	"brood": {
+-	  "intro": [
++    "brood": {
++      "intro": [
+         "Du riechst nach einer absoluten psychose"
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Wie bist du so stark alter!"
+-	  ]
+-	},
+-	"chitin": {
+-	  "intro": [
++      ]
++    },
++    "chitin": {
++      "intro": [
+         "Du wirst an meiner Panzerung zerbrechen."
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Das ... war nur Aufwärmrunde fr!"
+-	  ]
+-	},
+-	"synapse": {
+-	  "intro": [
++      ]
++    },
++    "synapse": {
++      "intro": [
+         "Du bist erledigt!"
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "WELCHER IDIOT HAT UNO REVERSE ERFUNDEN"
+-	  ]
+-	},
+-	"furnace": {
+-	  "intro": [
++      ]
++    },
++    "furnace": {
++      "intro": [
+         "Hier unten bleibt nichts kalt! Denn ich benutze noch eine PS4!"
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Jemand hat dort wohl neue Wärmeleitpaste reingemacht..."
+-	  ]
+-	},
+-	"marrow": {
+-	  "intro": [
++      ]
++    },
++    "marrow": {
++      "intro": [
+         "Dein Kopf passt noch in meine Pokemon Sammlung!"
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Ein Platz ... bleibt wohl leer..."
+-	  ]
+-	},
+-	"bog": {
+-	  "intro": [
++      ]
++    },
++    "bog": {
++      "intro": [
+         "Der Sumpf behält alles, was er bekommt."
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Du kannst gehen. Aber nicht alles von dir geht mit."
+-	  ]
+-	},
+-	"executioner": {
+-	  "intro": [
++      ]
++    },
++    "executioner": {
++      "intro": [
+         "Den Kopf kannst du gleich hierlassen."
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "nvm bro bitte hau ab."
+-	  ]
+-	},
+-	"architect": {
+-	  "intro": [
++      ]
++    },
++    "architect": {
++      "intro": [
+         "Jeder Ausgang führt wieder zu mir."
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Einen Ausgang gibt es der nicht zu mir führt geh dorthin..."
+-	  ]
+-	},
+-	"mirror": {
+-	  "intro": [
++      ]
++    },
++    "mirror": {
++      "intro": [
+         "Du willst gegen dich selbst gewinnen?"
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Welches von uns ... war das Original?"
+-	  ]
+-	},
+-	"omega": {
+-	  "intro": [
++      ]
++    },
++    "omega": {
++      "intro": [
+         "Du warst nie dafür vorgesehen, hier anzukommen."
+-	  ],
+-	  "defeat": [
++      ],
++      "defeat": [
+         "Dann ... bist du die neue Probe."
+-	  ]
+-	}
++      ]
++    }
+   },
+   "enemies": {
+-	"crawler": [
++    "crawler": [
+       "Du bist nicht auf dem Laufzettel!"
+-	],
+-	"spitter": [
++    ],
++    "spitter": [
+       "Bleib stehen. Ich kann sonst nicht zielen."
+-	],
+-	"charger": [
++    ],
++    "charger": [
+       "Platz da!"
+-	],
+-	"turret": [
++    ],
++    "turret": [
+       "Bitte stellen Sie sich in den Geschossring."
+-	],
+-	"larva": [
++    ],
++    "larva": [
+       "Hunger."
+-	],
+-	"decapitator": [
++    ],
++    "decapitator": [
+       "Mein Kopf ist heute irgendwie locker."
+-	],
+-	"splitter": [
++    ],
++    "splitter": [
+       "Wir sind mehr, als du denkst."
+-	],
+-	"blinker": [
++    ],
++    "blinker": [
+       "Hier bin ich. Oder doch hier?"
+-	],
+-	"shieldbug": [
++    ],
++    "shieldbug": [
+       "Von vorne wird das nix."
+-	],
+-	"leech": [
++    ],
++    "leech": [
+       "Hast du Kleingeld?"
+-	],
+-	"spore": [
++    ],
++    "spore": [
+       "Einmal tief einatmen."
+-	],
+-	"sniper": [
++    ],
++    "sniper": [
+       "Stillhalten. Nur einen Moment."
+-	]
++    ],
++    "medic": [
++      "Ich halte die Kolonie am Leben."
++    ],
++    "mortar": [
++      "Bleib doch genau da stehen."
++    ],
++    "stalker": [
++      "Du schaust in die falsche Richtung."
++    ],
++    "volatile": [
++      "Zu spät zum Zurückweichen?"
++    ]
+   },
+   "room_enter": [
+-	"Hier riecht es nach einer schlechten Entscheidung.",
++    "Hier riecht es nach einer schlechten Entscheidung.",
+     "Wenn hier ein Ausgang ist, nehme ich ihn."
+   ],
+   "route": [
+@@ -222,8 +234,8 @@
+     "Ich kann jederzeit Nein sagen. Theoretisch."
+   ],
+   "ai": [
+-	"Die Reinigungskosten werden Ihrer Probe berechnet.",
+-	"Ihre Entsorgung verzögert sich geringfügig.",
++    "Die Reinigungskosten werden Ihrer Probe berechnet.",
++    "Ihre Entsorgung verzögert sich geringfügig.",
+     "Diese Flucht ist nicht vom Qualitätsmanagement freigegeben."
+   ]
+-}
++}--- a/tests/static_checks.py
++++ b/tests/static_checks.py
+@@ -100,7 +100,7 @@
+     def test_split_children_do_not_recurse(self):
+         self.assertIn('if not bullet.child:\n      on_hit(bullet,enemy)', MAIN)
+         self.assertRegex(MAIN, r'bullet.damage\*0.4,true\)')
+-        self.assertIn('shots.size() > 450', MAIN)
++        self.assertIn('shots.size()>=384', MAIN)
+ 
+     def test_room_rewards_and_save_points_exist(self):
+         self.assertIn('room.choice = false', MAIN)
+@@ -128,7 +128,7 @@
+         for character in catalog_array('CHARACTERS'):
+             self.assertIn('character/' + character['id'], manifest)
+         for enemy in catalog_array('ENEMIES'):
+-            self.assertIn('enemy/' + enemy['id'], manifest)
++            self.assertIn('enemy/' + enemy.get('art_id',enemy['id']), manifest)
+         for boss in catalog_array('BOSSES'):
+             self.assertIn('boss/' + boss['kind'], manifest)
+         for biome in catalog_array('BIOMES'):
+@@ -148,7 +148,7 @@
+ 
+     def test_enemy_behaviors_and_direct_blood_damage(self):
+         enemies = catalog_array('ENEMIES')
+-        self.assertEqual(len(enemies), 12)
++        self.assertEqual(len(enemies), 16)
+         for enemy in enemies:
+             self.assertRegex(MAIN, r'    ' + str(enemy['kind']) + r':\n')
+         self.assertIn('enemy.head_hp -= bullet.damage', MAIN)
+@@ -168,7 +168,7 @@
+         self.assertGreaterEqual(sum(p['duration'] for p in intro), 30)
+         self.assertLessEqual(sum(p['duration'] for p in intro), 40)
+         people = ['character/' + c['id'] for c in catalog_array('CHARACTERS')]
+-        people += ['enemy/' + e['id'] for e in catalog_array('ENEMIES')]
++        people += ['enemy/' + e.get('art_id',e['id']) for e in catalog_array('ENEMIES')]
+         people += ['boss/' + b['kind'] for b in catalog_array('BOSSES')] + ['ai']
+         for person in people:
+             for emotion in ['neutral', 'happy', 'angry', 'hurt']:
+@@ -207,7 +207,7 @@
+             for e in catalog_array('EVENTS'):
+                 self.assertIn('biome/' + biome['id'] + '/' + e['id'], manifest)
+         self.assertIn('run_hp_cost += 2', MAIN)
+-        self.assertIn('curse_speed *= 1.25', MAIN)
++        self.assertIn('curse_speed = minf(1.75,curse_speed*1.25)', MAIN)
+         self.assertIn('room.cleared = false', MAIN)
+         self.assertIn('not id in route', MAIN)
+ 
+--- a/ASSET_LIST.csv.import
++++ b/ASSET_LIST.csv.import
+@@ -1,16 +1,3 @@
+ [remap]
+ 
+-importer="csv_translation"
+-type="Translation"
+-uid="uid://0e6xtlpskcxl"
+-
+-[deps]
+-
+-source_file="res://ASSET_LIST.csv"
+-
+-[params]
+-
+-compress=1
+-delimiter=0
+-unescape_keys=false
+-unescape_translations=true
++importer="keep"

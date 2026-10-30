@@ -1,0 +1,10 @@
+{
+  "unchanged_graphics_and_audio": 416,
+  "permitted_changed_floors": [
+    "assets/rooms/incubator/floor_tile.png",
+    "assets/rooms/marsh/floor_tile.png",
+    "assets/rooms/ossuary/floor_tile.png",
+    "assets/rooms/reactor/floor_tile.png",
+    "assets/rooms/void/floor_tile.png"
+  ]
+}

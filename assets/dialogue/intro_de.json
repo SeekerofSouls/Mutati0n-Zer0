@@ -1,0 +1,58 @@
+{
+  "panels": [
+    {
+      "id": "01_labor",
+      "title": "LABOR 07",
+      "speaker": "ai",
+      "name": "LABOR-KI",
+      "emotion": "neutral",
+      "duration": 6.0,
+      "text": "Willkommen. Jede Probe erwartet hier eine glückliche und sichere Zukunft."
+    },
+    {
+      "id": "02_probe",
+      "title": "EINE UNBRAUCHBARE PROBE",
+      "speaker": "character",
+      "name": "",
+      "emotion": "angry",
+      "duration": 5.5,
+      "text": "Moment. Warum steht auf meinem Behälter „Entsorgen“?"
+    },
+    {
+      "id": "03_abfall",
+      "title": "DIE ENTSORGUNG",
+      "speaker": "ai",
+      "name": "LABOR-KI",
+      "emotion": "neutral",
+      "duration": 6.0,
+      "text": "Unbrauchbare Proben werden fachgerecht verwertet. Bitte bleiben Sie dabei ruhig."
+    },
+    {
+      "id": "04_mutation",
+      "title": "ETWAS LEBT NOCH",
+      "speaker": "character",
+      "name": "",
+      "emotion": "happy",
+      "duration": 6.0,
+      "text": "Okay. Das war vorher nicht da. Aber ich lebe noch."
+    },
+    {
+      "id": "05_ausbruch",
+      "title": "EIN GERINGFÜGIGER ZWISCHENFALL",
+      "speaker": "ai",
+      "name": "LABOR-KI",
+      "emotion": "angry",
+      "duration": 5.5,
+      "text": "Die Probe verlässt ihren vorgesehenen Bereich. Alles ist weiterhin unter Kontrolle."
+    },
+    {
+      "id": "06_tuer",
+      "title": "VERSUCH NULL",
+      "speaker": "character",
+      "name": "",
+      "emotion": "angry",
+      "duration": 6.0,
+      "text": "Dann finden wir mal den Ausgang. Und ihr steht besser nicht im Weg."
+    }
+  ]
+}

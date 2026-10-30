@@ -1,0 +1,104 @@
+{
+  "pitch_randomness": 0.04,
+  "music_volume": 0.35,
+  "effects": {
+    "shoot": {
+      "path": "res://assets/audio/shoot.wav",
+      "volume": 0.22
+    },
+    "hit": {
+      "path": "res://assets/audio/hit.wav",
+      "volume": 0.65
+    },
+    "pickup": {
+      "path": "res://assets/audio/pickup.wav",
+      "volume": 0.65
+    },
+    "hurt": {
+      "path": "res://assets/audio/hurt.wav",
+      "volume": 0.65
+    },
+    "dash": {
+      "path": "res://assets/audio/dash.wav",
+      "volume": 0.65
+    },
+    "boom": {
+      "path": "res://assets/audio/boom.wav",
+      "volume": 0.65
+    },
+    "unlock": {
+      "path": "res://assets/audio/unlock.wav",
+      "volume": 0.65
+    },
+    "door": {
+      "path": "res://assets/audio/door.wav",
+      "volume": 0.65
+    },
+    "head_pop": {
+      "path": "res://assets/audio/head_pop.wav",
+      "volume": 0.65
+    },
+    "blood_spray": {
+      "path": "res://assets/audio/blood_spray.wav",
+      "volume": 0.18
+    },
+    "enemy_shoot": {
+      "path": "res://assets/audio/enemy_shoot.wav",
+      "volume": 0.25
+    },
+    "boss_roar": {
+      "path": "res://assets/audio/boss_roar.wav",
+      "volume": 0.65
+    },
+    "boss_defeat": {
+      "path": "res://assets/audio/boss_defeat.wav",
+      "volume": 0.65
+    },
+    "teleport": {
+      "path": "res://assets/audio/teleport.wav",
+      "volume": 0.65
+    },
+    "coin": {
+      "path": "res://assets/audio/coin.wav",
+      "volume": 0.65
+    },
+    "death": {
+      "path": "res://assets/audio/death.wav",
+      "volume": 0.65
+    },
+    "win": {
+      "path": "res://assets/audio/win.wav",
+      "volume": 0.65
+    },
+    "step": {
+      "path": "res://assets/audio/step.wav",
+      "volume": 0.08
+    }
+  },
+  "music": {
+    "menu": {
+      "path": "res://assets/audio/music_menu.wav",
+      "volume": 1.0
+    },
+    "incubator": {
+      "path": "res://assets/audio/music_incubator.wav",
+      "volume": 1.0
+    },
+    "reactor": {
+      "path": "res://assets/audio/music_reactor.wav",
+      "volume": 1.0
+    },
+    "marsh": {
+      "path": "res://assets/audio/music_marsh.wav",
+      "volume": 1.0
+    },
+    "ossuary": {
+      "path": "res://assets/audio/music_ossuary.wav",
+      "volume": 1.0
+    },
+    "void": {
+      "path": "res://assets/audio/music_void.wav",
+      "volume": 1.0
+    }
+  }
+}
